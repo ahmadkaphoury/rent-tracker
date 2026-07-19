@@ -1,0 +1,1959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Rent Tracker">
+    <meta name="theme-color" content="#0b1120">
+    <meta name="format-detection" content="telephone=no">
+    <title>Flat Rent Tracker Pro</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%230ea5e9'/%3E%3Cstop offset='1' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23g)'/%3E%3Ctext x='50' y='66' font-size='54' text-anchor='middle'%3E%F0%9F%8F%A2%3C/text%3E%3C/svg%3E">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- same styles as before, unchanged --- */
+        :root {
+            --bg-primary: #0b1120;
+            --bg-secondary: #151e32;
+            --bg-card: rgba(21, 30, 50, 0.7);
+            --bg-glass: rgba(30, 41, 59, 0.5);
+            --border-subtle: rgba(148, 163, 184, 0.1);
+            --border-medium: rgba(148, 163, 184, 0.15);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-primary: #0ea5e9;
+            --accent-success: #10b981;
+            --accent-danger: #ef4444;
+            --accent-warning: #f59e0b;
+            --accent-purple: #8b5cf6;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 18px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            background-image: radial-gradient(ellipse at 20% 0%, rgba(14, 165, 233, 0.1) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(139, 92, 246, 0.08) 0%, transparent 50%), radial-gradient(ellipse at 50% 50%, rgba(16, 185, 129, 0.03) 0%, transparent 60%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+            overscroll-behavior-y: none;
+        }
+        ::-webkit-scrollbar { width: 10px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.4); background-clip: content-box; }
+        .topbar {
+            display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+            padding: 18px 32px; padding-top: calc(18px + env(safe-area-inset-top));
+            background: rgba(11, 17, 32, 0.75); -webkit-backdrop-filter: blur(20px) saturate(150%); backdrop-filter: blur(20px) saturate(150%);
+            border-bottom: 1px solid var(--border-subtle); position: sticky; top: 0; z-index: 100;
+        }
+        .topbar-brand { display: flex; align-items: center; gap: 14px; }
+        .topbar-brand .logo-icon {
+            width: 42px; height: 42px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-purple));
+            border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem; box-shadow: 0 0 20px rgba(14, 165, 233, 0.35), inset 0 1px 0 rgba(255,255,255,0.2); flex-shrink: 0;
+        }
+        .topbar-brand h1 {
+            font-size: 1.3rem; font-weight: 800; background: linear-gradient(135deg, #f8fafc 0%, #94a3b8 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            letter-spacing: -0.02em; line-height: 1.2;
+        }
+        .topbar-tagline { font-size: 0.68rem; font-weight: 500; color: var(--text-muted); letter-spacing: 0.03em; margin-top: 1px; }
+        .topbar-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn {
+            border: none; padding: 10px 20px; border-radius: var(--radius-sm); font-family: 'Inter', sans-serif;
+            font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+            display: inline-flex; align-items: center; gap: 8px; outline: none; position: relative; overflow: hidden;
+            touch-action: manipulation; -webkit-user-select: none; user-select: none; white-space: nowrap;
+        }
+        .btn::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 100%); pointer-events: none; }
+        .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+        .btn:active { transform: translateY(0) scale(0.98); }
+        .btn:focus-visible { box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.35); }
+        .btn-primary { background: linear-gradient(135deg, var(--accent-primary), #0284c7); color: white; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3); }
+        .btn-primary:hover { box-shadow: 0 6px 20px rgba(14, 165, 233, 0.45); }
+        .btn-success { background: linear-gradient(135deg, var(--accent-success), #059669); color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+        .btn-success:hover { box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45); }
+        .btn-outline { background: rgba(148, 163, 184, 0.08); color: var(--text-secondary); border: 1px solid var(--border-medium); box-shadow: none; }
+        .btn-outline:hover { background: rgba(148, 163, 184, 0.16); color: var(--text-primary); box-shadow: none; }
+        .btn-danger { background: transparent; color: var(--accent-danger); padding: 8px 11px; font-size: 0.85rem; border-radius: 8px; }
+        .btn-danger:hover { background: rgba(239, 68, 68, 0.12); transform: scale(1.1); }
+        .btn-danger:active { background: rgba(239, 68, 68, 0.2); transform: scale(0.95); }
+        .btn-edit { background: transparent; color: var(--accent-primary); padding: 8px 11px; font-size: 0.85rem; border-radius: 8px; border: none; cursor: pointer; }
+        .btn-edit:hover { background: rgba(14, 165, 233, 0.12); transform: scale(1.1); }
+        .btn-edit:active { background: rgba(14, 165, 233, 0.2); transform: scale(0.95); }
+        .btn-save { background: rgba(16, 185, 129, 0.15); color: var(--accent-success); padding: 8px 11px; font-size: 0.85rem; border-radius: 8px; border: none; cursor: pointer; }
+        .btn-save:hover { background: rgba(16, 185, 129, 0.28); transform: scale(1.1); }
+        .btn-save:active { background: rgba(16, 185, 129, 0.35); transform: scale(0.95); }
+        tr.row-editing td { background: rgba(14, 165, 233, 0.05) !important; }
+        .btn-sm { padding: 8px 16px; font-size: 0.75rem; }
+        .main-container { max-width: min(1900px, 97vw); margin: 0 auto; padding: 24px 28px 40px; }
+        .alert-section {
+            margin-bottom: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle);
+            overflow: hidden; box-shadow: var(--shadow-sm); animation: fadeInUp 0.4s ease forwards;
+        }
+        .alert-section.is-clear { background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.03)); border-color: rgba(16, 185, 129, 0.3); }
+        .alert-section.has-warnings { background: linear-gradient(135deg, rgba(239, 68, 68, 0.09), rgba(245, 158, 11, 0.05)); border-color: rgba(239, 68, 68, 0.3); }
+        .alert-header { display: flex; align-items: center; gap: 10px; padding: 14px 20px; font-size: 0.85rem; font-weight: 700; letter-spacing: -0.01em; }
+        .alert-header .alert-header-icon { font-size: 1.05rem; }
+        .is-clear .alert-header { color: #34d399; }
+        .has-warnings .alert-header { color: #f87171; }
+        .alert-list { display: flex; flex-direction: column; gap: 8px; padding: 0 20px 16px; }
+        .alert-item {
+            display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; border-radius: var(--radius-sm);
+            font-size: 0.78rem; line-height: 1.45; background: rgba(15, 23, 42, 0.35); border: 1px solid var(--border-subtle);
+        }
+        .alert-item.severity-overdue { border-color: rgba(239, 68, 68, 0.35); }
+        .alert-item.severity-notcollected { border-color: rgba(220, 38, 38, 0.4); }
+        .alert-item.severity-pending { border-color: rgba(245, 158, 11, 0.35); }
+        .alert-item .alert-icon { flex-shrink: 0; font-size: 0.95rem; }
+        .alert-item strong { color: var(--text-primary); }
+        .alert-item .alert-tag { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+        .severity-overdue .alert-tag { background: rgba(239, 68, 68, 0.18); color: #fca5a5; }
+        .severity-notcollected .alert-tag { background: rgba(220, 38, 38, 0.22); color: #f87171; }
+        .severity-pending .alert-tag { background: rgba(245, 158, 11, 0.18); color: #fcd34d; }
+        @media(max-width:640px) { .alert-header { padding: 12px 16px; font-size: 0.8rem; } .alert-list { padding: 0 14px 14px; } }
+        .kpi-section {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px;
+        }
+        .kpi-card {
+            background: var(--bg-card); -webkit-backdrop-filter: blur(20px) saturate(150%); backdrop-filter: blur(20px) saturate(150%);
+            border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 20px 22px;
+            position: relative; overflow: hidden; transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+            box-shadow: var(--shadow-sm);
+        }
+        .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent-primary), var(--accent-purple)); opacity: 0.8; }
+        .kpi-card::after { content: ''; position: absolute; top: -40%; right: -20%; width: 120px; height: 120px; background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%); pointer-events: none; }
+        .kpi-card:hover { border-color: var(--border-medium); transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+        .kpi-icon { position: absolute; top: 18px; right: 20px; font-size: 1.1rem; opacity: 0.35; }
+        .kpi-card.flat1-accent::before { background: linear-gradient(90deg, #0ea5e9, #06b6d4); }
+        .kpi-card.flat2-accent::before { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+        .kpi-card.total-accent::before { background: linear-gradient(90deg, #10b981, #34d399); }
+        .kpi-card.pending-accent::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .kpi-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 6px; }
+        .kpi-value { font-size: 1.65rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+        .kpi-sub { font-size: 0.72rem; color: var(--text-muted); margin-top: 5px; display: flex; align-items: center; gap: 4px; }
+        .section-card {
+            background: var(--bg-card); -webkit-backdrop-filter: blur(20px) saturate(150%); backdrop-filter: blur(20px) saturate(150%);
+            border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 20px;
+            box-shadow: var(--shadow-sm); transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+        .section-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+        #flat1-section::before { background: linear-gradient(90deg, #0ea5e9, #06b6d4); }
+        #flat2-section::before { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+        #flat1-section { border-left: 3px solid rgba(14, 165, 233, 0.35); background: linear-gradient(180deg, rgba(14, 165, 233, 0.06), transparent 260px), var(--bg-card); }
+        #flat2-section { border-left: 3px solid rgba(139, 92, 246, 0.35); background: linear-gradient(180deg, rgba(139, 92, 246, 0.06), transparent 260px), var(--bg-card); }
+        .section-card:hover { border-color: var(--border-medium); box-shadow: var(--shadow-md); }
+        .section-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border-subtle); }
+        .section-title { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 10px; }
+        .section-title .title-icon { width: 32px; height: 32px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+        .flat1-icon { background: rgba(14, 165, 233, 0.15); box-shadow: inset 0 0 0 1px rgba(14, 165, 233, 0.25); }
+        .flat2-icon { background: rgba(139, 92, 246, 0.15); box-shadow: inset 0 0 0 1px rgba(139, 92, 246, 0.25); }
+        .edit-hint { font-size: 0.68rem; font-weight: 500; color: var(--text-muted); background: rgba(100, 116, 139, 0.15); padding: 5px 12px; border-radius: 20px; white-space: nowrap; }
+        .flats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media(max-width:1200px) { .flats-grid { grid-template-columns: 1fr; } .kpi-section { grid-template-columns: repeat(2, 1fr); } }
+        /* Quick-jump FAB: only needed when the two flats stack on top of each other
+           (same breakpoint as .flats-grid above) — on wide screens they sit side by
+           side so there's nothing to jump past. */
+        .quick-jump-fab { display: none; }
+        @media(max-width:1200px) {
+            .quick-jump-fab {
+                display: flex; flex-direction: column; gap: 10px;
+                position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom));
+                z-index: 150;
+            }
+            .fab-btn {
+                width: 54px; height: 54px; border-radius: 50%; border: none; cursor: pointer;
+                color: white; font-size: 0.68rem; font-weight: 800; font-family: 'Inter', sans-serif;
+                display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0;
+                box-shadow: var(--shadow-lg); touch-action: manipulation; line-height: 1;
+            }
+            .fab-btn span { font-size: 0.85rem; margin-top: 1px; }
+            .fab-flat1 { background: linear-gradient(135deg, var(--accent-primary), #0284c7); }
+            .fab-flat2 { background: linear-gradient(135deg, var(--accent-purple), #7c3aed); }
+            .fab-btn:active { transform: scale(0.92); }
+        }
+        .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); margin-bottom: 20px; box-shadow: var(--shadow-sm); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.76rem; font-family: 'Inter', sans-serif; }
+        /* Minimum width per table on wider screens (tablet) so columns stay legible and
+           .table-wrap scrolls horizontally instead of squeezing columns. On phones (<=640px)
+           this is overridden below in favor of a stacked card layout — see the final media query. */
+        #contracts-flat1, #contracts-flat2 { min-width: 480px; }
+        #payments-flat1, #payments-flat2 { min-width: 760px; }
+        thead th { background: rgba(30, 41, 59, 0.95); color: var(--text-secondary); font-weight: 700; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.07em; padding: 10px 10px; text-align: center; border-bottom: 1px solid var(--border-medium); white-space: nowrap; }
+        tbody td { padding: 9px 10px; text-align: center; color: var(--text-primary); border-bottom: 1px solid var(--border-subtle); transition: background 0.15s ease; position: relative; font-variant-numeric: tabular-nums; }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:nth-child(even):not([class*="color-"]) td { background: rgba(148, 163, 184, 0.03); }
+        tbody tr:hover td { background: rgba(51, 65, 85, 0.35); }
+        .rent-period-cell { white-space: nowrap; font-weight: 500; }
+        /* Editable remarks cell */
+        td[contenteditable="true"] {
+            cursor: text;
+            border-radius: var(--radius-sm);
+            background: rgba(30, 41, 59, 0.2);
+            transition: background 0.2s;
+        }
+        td[contenteditable="true"]:hover {
+            background: rgba(51, 65, 85, 0.5);
+        }
+        td[contenteditable="true"]:focus {
+            background: rgba(14, 165, 233, 0.1) !important;
+            outline: 2px solid var(--accent-primary);
+            outline-offset: -2px;
+            border-radius: var(--radius-sm);
+        }
+        input[type="checkbox"] { -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 20px; height: 20px; border: 2px solid var(--border-medium); border-radius: 6px; background: transparent; cursor: pointer; transition: all 0.2s ease; position: relative; flex-shrink: 0; touch-action: manipulation; }
+        input[type="checkbox"]:checked { background: var(--accent-success); border-color: var(--accent-success); }
+        input[type="checkbox"]:checked::after { content: '✓'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 700; }
+        input[type="checkbox"]:hover { border-color: var(--accent-primary); }
+        .color-yellow { background: rgba(245, 158, 11, 0.12) !important; }
+        .color-yellow td { color: #fbbf24 !important; }
+        .color-green { background: rgba(16, 185, 129, 0.12) !important; }
+        .color-green td { color: #34d399 !important; }
+        .color-magenta { background: rgba(236, 72, 153, 0.12) !important; }
+        .color-magenta td { color: #f472b6 !important; }
+        .color-blue { background: rgba(59, 130, 246, 0.12) !important; }
+        .color-blue td { color: #60a5fa !important; }
+        .color-orange { background: rgba(249, 115, 22, 0.12) !important; }
+        .color-orange td { color: #fb923c !important; }
+        .color-picker-container { display: inline-flex; align-items: center; justify-content: center; position: relative; }
+        .color-trigger { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--border-medium); cursor: pointer; background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 30%, rgba(100, 116, 139, 0.5) 80%); display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; transition: all 0.2s ease; touch-action: manipulation; }
+        .color-trigger:hover { transform: scale(1.2); border-color: var(--accent-primary); box-shadow: 0 0 8px rgba(14, 165, 233, 0.3); }
+        .color-palette-popover { display: none; position: absolute; top: 34px; left: 50%; transform: translateX(-50%); background: var(--bg-secondary); border: 1px solid var(--border-medium); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); padding: 9px; gap: 9px; z-index: 100; }
+        .color-palette-popover.active { display: flex; animation: fadeInUp 0.15s ease; }
+        .color-opt { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.15s ease; touch-action: manipulation; }
+        .color-opt:hover { transform: scale(1.25); border-color: var(--text-primary); }
+        .opt-none { background: var(--bg-primary); border-color: var(--border-medium); }
+        .opt-green { background: rgba(16, 185, 129, 0.5); }
+        .opt-magenta { background: rgba(236, 72, 153, 0.5); }
+        .opt-blue { background: rgba(59, 130, 246, 0.5); }
+        .opt-orange { background: rgba(249, 115, 22, 0.5); }
+        .form-group { margin-top: 16px; padding: 20px; background: var(--bg-glass); border: 1px dashed var(--border-medium); border-radius: var(--radius-md); position: relative; }
+        .form-group-title { font-size: 0.82rem; font-weight: 700; color: var(--text-primary); margin: 0 0 14px 0; display: flex; align-items: center; gap: 8px; }
+        .form-group-title .form-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-primary); }
+        .form-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+        .form-row label { font-size: 0.72rem; font-weight: 600; color: var(--text-secondary); display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 130px; }
+        .form-field-wide { flex: 2; min-width: 250px; }
+        .form-row input, .form-row select { padding: 9px 12px; border: 1px solid var(--border-medium); border-radius: var(--radius-sm); font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 500; background: rgba(15, 23, 42, 0.6); color: var(--text-primary); outline: none; transition: all 0.2s ease; -webkit-appearance: none; appearance: none; width: 100%; }
+        @media(min-width:641px) { .form-row input, .form-row select { font-size: 0.82rem; } }
+        .form-row input:focus, .form-row select:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15); background: rgba(15, 23, 42, 0.85); }
+        .form-row input::placeholder { color: var(--text-muted); }
+        .read-only-input { background: rgba(30, 41, 59, 0.8) !important; font-weight: 700; color: var(--accent-primary) !important; }
+        select option { background: var(--bg-secondary); color: var(--text-primary); }
+        .app-footer { text-align: center; padding: 24px; padding-bottom: calc(24px + env(safe-area-inset-bottom)); color: var(--text-muted); font-size: 0.72rem; margin-top: 16px; border-top: 1px solid var(--border-subtle); }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .kpi-card, .section-card { animation: fadeInUp 0.5s ease forwards; }
+        .kpi-card:nth-child(1) { animation-delay: 0.05s; }
+        .kpi-card:nth-child(2) { animation-delay: 0.1s; }
+        .kpi-card:nth-child(3) { animation-delay: 0.15s; }
+        .kpi-card:nth-child(4) { animation-delay: 0.2s; }
+
+        /* ============================================================
+           MOBILE PORTRAIT (<=640px) — placed last on purpose so it wins
+           the cascade over the component rules above with equal
+           specificity (e.g. .form-row, table). Goal: no horizontal
+           scrolling anywhere, no clipped text, no dead whitespace.
+           ============================================================ */
+        @media(max-width:640px) {
+            .kpi-section { grid-template-columns: 1fr; gap: 8px; }
+            .kpi-card { padding: 14px 16px; }
+            .main-container { padding: 12px 12px 28px; }
+            .topbar { padding: 12px 16px; padding-top: calc(12px + env(safe-area-inset-top)); }
+            .topbar-brand h1 { font-size: 1.1rem; }
+            .topbar-tagline { font-size: 0.64rem; }
+            .topbar-actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+            .topbar-actions .btn { justify-content: center; padding: 8px 6px; font-size: 0.72rem; white-space: normal; text-align: center; line-height: 1.2; }
+            .topbar-actions .btn:nth-child(5) { grid-column: 1 / -1; }
+            .section-card { padding: 12px; margin-bottom: 12px; }
+            .section-header { margin-bottom: 10px; padding-bottom: 8px; }
+            .section-title { font-size: 0.85rem; }
+
+            /* Forms: true full-width stacking (fixes the old align-items:flex-end
+               bug, which in column direction pinned fields to the right edge) */
+            .form-row { flex-direction: column; align-items: stretch; gap: 8px; }
+            .form-row label { min-width: 0; width: 100%; font-size: 0.68rem; gap: 3px; }
+            .form-row input, .form-row select { padding: 7px 10px; }
+            .form-field-wide { flex: none; width: 100%; min-width: 0; }
+            .form-group { padding: 10px; margin-top: 10px; }
+            .form-group-title { font-size: 0.76rem; margin-bottom: 8px; }
+
+            /* "Add / Update Contract": From / To / Monthly Rent share row 1;
+               Payment Frequency / Remarks (wider) share row 2 — matches the
+               field order already in the HTML, so no reordering needed. */
+            #contract-form-flat1 .form-row, #contract-form-flat2 .form-row {
+                display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 8px;
+            }
+            #contract-form-flat1 .form-row label, #contract-form-flat2 .form-row label {
+                min-width: 0; width: auto; font-size: 0.6rem; gap: 2px;
+            }
+            #contract-form-flat1 .form-row label:has(#c1-remarks),
+            #contract-form-flat2 .form-row label:has(#c2-remarks) { grid-column: 2 / 4; }
+            #contract-form-flat1 .form-row input, #contract-form-flat1 .form-row select,
+            #contract-form-flat2 .form-row input, #contract-form-flat2 .form-row select { padding: 6px 8px; }
+
+            /* "Add / Update Rent Payment": Start Month / End Month / Highlight
+               share row 1; Original / Deduction / Received share row 2; Remarks
+               gets its own full-width row. The two source .form-row divs are
+               "unwrapped" via display:contents so every field becomes a direct
+               grid item of the form-group and can be freely repositioned with
+               order — regardless of which original row it came from. */
+            #payment-form-flat1, #payment-form-flat2 {
+                display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 8px; align-items: end;
+            }
+            #payment-form-flat1 .form-row, #payment-form-flat2 .form-row { display: contents; }
+            #payment-form-flat1 .form-group-title, #payment-form-flat2 .form-group-title { grid-column: 1 / -1; margin-bottom: 2px; }
+            #payment-form-flat1 .form-row label, #payment-form-flat2 .form-row label {
+                min-width: 0; width: auto; font-size: 0.58rem; gap: 2px;
+            }
+            #payment-form-flat1 .form-row input, #payment-form-flat1 .form-row select,
+            #payment-form-flat2 .form-row input, #payment-form-flat2 .form-row select { padding: 6px 8px; }
+            #payment-form-flat1 .form-row input::placeholder, #payment-form-flat2 .form-row input::placeholder { font-size: 0.85rem; }
+            #payment-form-flat1 label:has(#p1-start), #payment-form-flat2 label:has(#p2-start) { order: 1; }
+            #payment-form-flat1 label:has(#p1-end), #payment-form-flat2 label:has(#p2-end) { order: 2; }
+            #payment-form-flat1 label:has(#p1-color), #payment-form-flat2 label:has(#p2-color) { order: 3; }
+            #payment-form-flat1 label:has(#p1-original), #payment-form-flat2 label:has(#p2-original) { order: 4; }
+            #payment-form-flat1 label:has(#p1-deduction), #payment-form-flat2 label:has(#p2-deduction) { order: 5; }
+            #payment-form-flat1 label:has(#p1-received), #payment-form-flat2 label:has(#p2-received) { order: 6; }
+            #payment-form-flat1 label:has(#p1-remarks), #payment-form-flat2 label:has(#p2-remarks) { order: 7; grid-column: 1 / -1; }
+            #payment-form-flat1 > button, #payment-form-flat2 > button { order: 99; grid-column: 1 / -1; }
+
+            /* Tables -> compact stacked cards, so nothing needs horizontal scrolling */
+            #contracts-flat1, #contracts-flat2, #payments-flat1, #payments-flat2 { min-width: 0; width: 100%; }
+            .table-wrap { overflow-x: visible; box-shadow: none; border: none; margin-bottom: 12px; }
+            table, tbody { display: block; width: 100%; }
+            thead { display: none; }
+            tbody tr {
+                display: flex; flex-wrap: wrap;
+                background: rgba(30, 41, 59, 0.55);
+                border: 1px solid var(--border-subtle);
+                border-radius: var(--radius-md);
+                margin-bottom: 7px;
+                padding: 1px 12px;
+                gap: 0 10px;
+            }
+            tbody tr:last-child { margin-bottom: 0; }
+            tbody td {
+                display: flex; flex: 1 0 100%;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+                padding: 6px 0;
+                border-bottom: 1px dashed var(--border-subtle);
+                text-align: right;
+                white-space: normal;
+            }
+            tbody tr td:last-child { border-bottom: none; }
+            tbody td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                font-size: 0.6rem;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                color: var(--text-secondary);
+                text-align: left;
+                flex-shrink: 0;
+                white-space: nowrap;
+            }
+            .rent-period-cell { white-space: normal; }
+
+            /* ---- Rent Period Receipts card: rebuilt with CSS Grid instead of
+               flex-wrap. Grid gives each cell a FIXED column/row position that
+               never changes based on content width, so nothing can unexpectedly
+               jump to its own line the way flex-wrap items could. ---- */
+            #payments-flat1 tbody tr, #payments-flat2 tbody tr {
+                display: grid;
+                grid-template-columns: 1.7fr 1fr 1fr 1fr;
+                gap: 4px 6px;
+            }
+            #payments-flat1 tbody td, #payments-flat2 tbody td {
+                display: flex; flex-direction: column; align-items: flex-start;
+                gap: 2px; text-align: left; border-bottom: none; padding: 8px 0 6px;
+                min-width: 0; overflow-wrap: break-word;
+            }
+            /* Row 1: Period / Original / Deducted / Final — one column each */
+            #payments-flat1 tbody td:nth-child(1), #payments-flat2 tbody td:nth-child(1) { grid-column: 1; grid-row: 1; white-space: nowrap; }
+            #payments-flat1 tbody td:nth-child(2), #payments-flat2 tbody td:nth-child(2) { grid-column: 2; grid-row: 1; }
+            #payments-flat1 tbody td:nth-child(3), #payments-flat2 tbody td:nth-child(3) { grid-column: 3; grid-row: 1; }
+            #payments-flat1 tbody td:nth-child(4), #payments-flat2 tbody td:nth-child(4) { grid-column: 4; grid-row: 1; }
+            #payments-flat1 tbody td:nth-child(1)::before, #payments-flat2 tbody td:nth-child(1)::before { content: 'Period'; }
+            #payments-flat1 tbody td:nth-child(3)::before, #payments-flat2 tbody td:nth-child(3)::before { content: 'Deducted'; }
+            #payments-flat1 tbody td:nth-child(4)::before, #payments-flat2 tbody td:nth-child(4)::before { content: 'Final'; }
+
+            /* Row 2: Remarks — spans the full width so long notes have room */
+            #payments-flat1 tbody td:nth-child(5), #payments-flat2 tbody td:nth-child(5) {
+                grid-column: 1 / -1; grid-row: 2;
+                border-top: 1px dashed var(--border-subtle); margin-top: 2px; padding-top: 8px;
+            }
+
+            /* Row 3: Bank / Color / Delete / Edit — one small column each, always
+               on their own single line since grid columns never reflow */
+            #payments-flat1 tbody td:nth-child(6), #payments-flat2 tbody td:nth-child(6),
+            #payments-flat1 tbody td:nth-child(7), #payments-flat2 tbody td:nth-child(7),
+            #payments-flat1 tbody td:nth-child(8), #payments-flat2 tbody td:nth-child(8),
+            #payments-flat1 tbody td:nth-child(9), #payments-flat2 tbody td:nth-child(9) {
+                grid-row: 3; flex-direction: row; align-items: center; justify-content: center;
+                gap: 3px; border-top: 1px dashed var(--border-subtle); margin-top: 2px; padding: 8px 0 6px;
+            }
+            #payments-flat1 tbody td:nth-child(6), #payments-flat2 tbody td:nth-child(6) { grid-column: 1; justify-content: flex-start; }
+            #payments-flat1 tbody td:nth-child(7), #payments-flat2 tbody td:nth-child(7) { grid-column: 2; }
+            #payments-flat1 tbody td:nth-child(8), #payments-flat2 tbody td:nth-child(8) { grid-column: 3; }
+            #payments-flat1 tbody td:nth-child(9), #payments-flat2 tbody td:nth-child(9) { grid-column: 4; }
+            #payments-flat1 tbody td:nth-child(6)::before, #payments-flat2 tbody td:nth-child(6)::before { font-size: 0.56rem; }
+            #payments-flat1 tbody td:nth-child(7)::before, #payments-flat2 tbody td:nth-child(7)::before,
+            #payments-flat1 tbody td:nth-child(8)::before, #payments-flat2 tbody td:nth-child(8)::before,
+            #payments-flat1 tbody td:nth-child(9)::before, #payments-flat2 tbody td:nth-child(9)::before {
+                content: none;
+            }
+            /* Small, simple controls so all 4 comfortably share one line */
+            #payments-flat1 tbody td:nth-child(6) input[type="checkbox"], #payments-flat2 tbody td:nth-child(6) input[type="checkbox"] {
+                width: 16px; height: 16px; margin: 0;
+            }
+            #payments-flat1 tbody td:nth-child(7) .color-trigger, #payments-flat2 tbody td:nth-child(7) .color-trigger {
+                width: 22px; height: 22px; font-size: 0.65rem;
+            }
+            #payments-flat1 tbody td:nth-child(8) .btn, #payments-flat2 tbody td:nth-child(8) .btn,
+            #payments-flat1 tbody td:nth-child(9) .btn, #payments-flat2 tbody td:nth-child(9) .btn {
+                padding: 4px; width: 26px; height: 26px; font-size: 0.7rem; min-width: 0;
+                display: flex; align-items: center; justify-content: center;
+            }
+
+            /* ---- Contract Periods card: rebuilt with CSS Grid (same fix as the
+               Rent Period Receipts card) so Period / Monthly Rent / Frequency
+               always sit in fixed columns on both flats, regardless of content
+               width or screen size. From+To merge visually into one "Period"
+               column via two narrow adjacent tracks. ---- */
+            #contracts-flat1 tbody tr, #contracts-flat2 tbody tr {
+                display: grid;
+                grid-template-columns: 0.55fr 0.45fr 1fr 1fr;
+                gap: 4px 6px;
+            }
+            #contracts-flat1 tbody td, #contracts-flat2 tbody td {
+                display: flex; flex-direction: column; align-items: flex-start;
+                gap: 2px; text-align: left; border-bottom: none; padding: 8px 0 6px;
+                min-width: 0; overflow-wrap: break-word;
+            }
+            #contracts-flat1 tbody td:nth-child(1), #contracts-flat2 tbody td:nth-child(1) { grid-column: 1; grid-row: 1; white-space: nowrap; }
+            #contracts-flat1 tbody td:nth-child(1)::before, #contracts-flat2 tbody td:nth-child(1)::before { content: 'Period'; }
+            #contracts-flat1 tbody td:nth-child(2), #contracts-flat2 tbody td:nth-child(2) { grid-column: 2; grid-row: 1; white-space: nowrap; }
+            #contracts-flat1 tbody td:nth-child(2)::before, #contracts-flat2 tbody td:nth-child(2)::before {
+                content: '→'; font-size: 0.8rem; color: var(--text-secondary); text-transform: none; letter-spacing: 0;
+            }
+            #contracts-flat1 tbody td:nth-child(3), #contracts-flat2 tbody td:nth-child(3) { grid-column: 3; grid-row: 1; }
+            #contracts-flat1 tbody td:nth-child(4), #contracts-flat2 tbody td:nth-child(4) { grid-column: 4; grid-row: 1; }
+            #contracts-flat1 tbody td:nth-child(5), #contracts-flat2 tbody td:nth-child(5) {
+                grid-column: 1 / -1; grid-row: 2;
+                border-top: 1px dashed var(--border-subtle); margin-top: 2px; padding: 8px 0 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="topbar">
+        <div class="topbar-brand">
+            <div class="logo-icon">🏢</div>
+            <div>
+                <h1>Flat Rent Tracker Pro</h1>
+                <div class="topbar-tagline">Rental income &amp; collections dashboard</div>
+                <div class="topbar-tagline" id="syncStatusLine" style="margin-top:2px;"></div>
+            </div>
+        </div>
+        <div class="topbar-actions">
+            <button class="btn btn-success" onclick="exportToExcelFormatted()">
+                <span>📊</span> Export to Excel
+            </button>
+            <button class="btn btn-primary" onclick="saveTrackerData()">
+                <span>💾</span> Save Data
+            </button>
+            <button class="btn btn-outline" onclick="exportDataAsJSON()" title="Download a backup file of all your data">
+                <span>⬇️</span> Backup Data
+            </button>
+            <button class="btn btn-outline" onclick="triggerImportData()" title="Restore data from a backup file">
+                <span>⬆️</span> Restore Data
+            </button>
+            <button class="btn btn-outline" onclick="openSyncSettings()" id="cloudSyncBtn" title="Sync your data across devices">
+                <span>☁️</span> <span id="cloudSyncBtnLabel">Cloud Sync</span>
+            </button>
+            <input type="file" id="importFileInput" accept="application/json" style="display:none;" onchange="importDataFromJSON(event)">
+        </div>
+    </nav>
+
+    <div class="main-container">
+
+        <div class="alert-section is-clear" id="dueAlertsSection">
+            <div class="alert-header"><span class="alert-header-icon">✅</span><span id="alertHeaderText">Checking rent status…</span></div>
+            <div class="alert-list" id="alertList"></div>
+        </div>
+
+        <div class="kpi-section">
+            <div class="kpi-card flat1-accent">
+                <span class="kpi-icon">🔑</span>
+                <div class="kpi-label">Flat 1 — Ahmad | Total Collected</div>
+                <div class="kpi-value" id="kpi-flat1-collected">—</div>
+                <div class="kpi-sub">Across all payment periods</div>
+            </div>
+            <div class="kpi-card flat2-accent">
+                <span class="kpi-icon">🔑</span>
+                <div class="kpi-label">Flat 2 — Lamlom | Total Collected</div>
+                <div class="kpi-value" id="kpi-flat2-collected">—</div>
+                <div class="kpi-sub">Across all payment periods</div>
+            </div>
+            <div class="kpi-card total-accent">
+                <span class="kpi-icon">💰</span>
+                <div class="kpi-label">Combined Total Collected</div>
+                <div class="kpi-value" id="kpi-total-collected">—</div>
+                <div class="kpi-sub" id="kpi-total-sub">Both flats combined</div>
+            </div>
+            <div class="kpi-card pending-accent">
+                <span class="kpi-icon">⏳</span>
+                <div class="kpi-label">Pending / Not Sent to Bank</div>
+                <div class="kpi-value" id="kpi-pending">—</div>
+                <div class="kpi-sub" id="kpi-pending-sub">Awaiting bank transfer</div>
+            </div>
+        </div>
+
+        <div class="flats-grid">
+
+            <!-- FLAT 1 -->
+            <div class="section-card" id="flat1-section">
+                <div class="section-header">
+                    <div class="section-title" id="title-flat1">
+                        <span class="title-icon flat1-icon">🔑</span>
+                        Flat 1 — Ahmad
+                    </div>
+                    <span class="edit-hint">Remarks are editable</span>
+                </div>
+
+                <h3 style="font-size:0.78rem; color:var(--text-secondary); font-weight:600; margin-bottom:10px;">Contract Periods</h3>
+                <div class="table-wrap">
+                    <table id="contracts-flat1">
+                        <thead><tr><th>From</th><th>To</th><th>Monthly Rent</th><th>Frequency</th><th>Remarks</th></tr></thead>
+                        <tbody>
+                            <tr><td>Jan-23</td><td>Dec-23</td><td>5500</td><td>Every 3 Months</td><td></td></tr>
+                            <tr><td>Jan-24</td><td>Dec-24</td><td>6000</td><td>Every 3 Months</td><td></td></tr>
+                            <tr><td>Jan-25</td><td>Dec-25</td><td>6000</td><td>Every 3 Months</td><td></td></tr>
+                            <tr><td>Jan-26</td><td>Dec-26</td><td>9000</td><td>Every 3 Months</td><td></td></tr>
+                            <tr><td>Jan-27</td><td>Dec-27</td><td>10000</td><td>Every 3 Months</td><td></td></tr>
+                            <tr><td>Jan-28</td><td>Dec-28</td><td>11000</td><td>Every 3 Months</td><td></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="form-group" id="contract-form-flat1">
+                    <div class="form-group-title"><span class="form-dot"></span>Add / Update Contract</div>
+                    <div class="form-row">
+                        <label>From<input type="month" id="c1-from" min="2020-01" max="2100-12"></label>
+                        <label>To<input type="month" id="c1-to" min="2020-01" max="2100-12"></label>
+                        <label>Monthly Rent<input type="number" id="c1-rent" placeholder="Amount"></label>
+                        <label>Payment Frequency
+                            <select id="c1-frequency">
+                                <option value="1">Every 1 Month</option>
+                                <option value="2">Every 2 Months</option>
+                                <option value="3" selected>Every 3 Months</option>
+                            </select>
+                        </label>
+                        <label>Remarks<input type="text" id="c1-remarks" placeholder="Remarks"></label>
+                    </div>
+                    <button class="btn btn-primary btn-sm" style="margin-top:12px;" onclick="addContract('flat1')">Add / Update Contract</button>
+                </div>
+
+                <div class="form-group" id="payment-form-flat1">
+                    <div class="form-group-title"><span class="form-dot"></span>Add / Update Rent Payment - Flat Ahmad</div>
+                    <div class="form-row" style="margin-bottom:6px;">
+                        <label>Start Month<input type="month" id="p1-start" min="2020-01" max="2100-12" onchange="calculateRentForm('flat1')"></label>
+                        <label>End Month<input type="month" id="p1-end" min="2020-01" max="2100-12" onchange="calculateRentForm('flat1')"></label>
+                        <label>Original Amount<input type="number" id="p1-original" placeholder="Auto" readonly class="read-only-input"></label>
+                        <label>Deduction Amount<input type="number" id="p1-deduction" value="0" oninput="calculateRentForm('flat1')"></label>
+                        <label>Received Amount (Final)<input type="number" id="p1-received" placeholder="Auto" readonly class="read-only-input"></label>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-field-wide">Deductions / Remarks<input type="text" id="p1-remarks" placeholder="Add remarks or balance details here" style="width:100%;"></label>
+                        <label>Highlight
+                            <select id="p1-color">
+                                <option value="">None</option>
+                                <option value="color-green">Green (Deductions)</option>
+                                <option value="color-magenta">Magenta (Special)</option>
+                                <option value="color-blue">Blue Highlight</option>
+                                <option value="color-orange">Orange Highlight</option>
+                            </select>
+                        </label>
+                    </div>
+                    <button class="btn btn-primary btn-sm" style="margin-top:12px;" onclick="addPayment('flat1')">Add / Update Payment</button>
+                </div>
+
+                <h3 style="font-size:0.78rem; color:var(--text-secondary); font-weight:600; margin:20px 0 10px;">Rent Period Receipts</h3>
+                <div class="table-wrap">
+                    <table id="payments-flat1">
+                        <thead>
+                            <tr>
+                                <th style="width:15%;">Rent Period</th>
+                                <th style="width:11%;">Original</th>
+                                <th style="width:11%;">Deduction</th>
+                                <th style="width:12%;">Received (Final)</th>
+                                <th style="width:16%;">Remarks</th>
+                                <th style="width:6%;">Bank</th>
+                                <th style="width:7%;">Color</th>
+                                <th style="width:5%;">Del</th>
+                                <th style="width:6%;">Edit</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- FLAT 2 -->
+            <div class="section-card" id="flat2-section">
+                <div class="section-header">
+                    <div class="section-title" id="title-flat2">
+                        <span class="title-icon flat2-icon">🔑</span>
+                        Flat 2 — Lamlom
+                    </div>
+                    <span class="edit-hint">Remarks are editable</span>
+                </div>
+
+                <h3 style="font-size:0.78rem; color:var(--text-secondary); font-weight:600; margin-bottom:10px;">Contract Periods</h3>
+                <div class="table-wrap">
+                    <table id="contracts-flat2">
+                        <thead><tr><th>From</th><th>To</th><th>Monthly Rent</th><th>Frequency</th><th>Remarks</th></tr></thead>
+                        <tbody>
+                            <tr><td>Jan-23</td><td>Dec-25</td><td>7000</td><td>Every 3 Months</td><td></td></tr>
+                            <tr><td>Jan-26</td><td>Dec-26</td><td>10000</td><td>Every 3 Months</td><td></td></tr>
+                            <tr><td>Jan-27</td><td>Dec-27</td><td>11000</td><td>Every 3 Months</td><td></td></tr>
+                            <tr><td>Jan-28</td><td>Dec-28</td><td>12000</td><td>Every 3 Months</td><td></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="form-group" id="contract-form-flat2">
+                    <div class="form-group-title"><span class="form-dot"></span>Add / Update Contract</div>
+                    <div class="form-row">
+                        <label>From<input type="month" id="c2-from" min="2020-01" max="2100-12"></label>
+                        <label>To<input type="month" id="c2-to" min="2020-01" max="2100-12"></label>
+                        <label>Monthly Rent<input type="number" id="c2-rent" placeholder="Amount"></label>
+                        <label>Payment Frequency
+                            <select id="c2-frequency">
+                                <option value="1">Every 1 Month</option>
+                                <option value="2">Every 2 Months</option>
+                                <option value="3" selected>Every 3 Months</option>
+                            </select>
+                        </label>
+                        <label>Remarks<input type="text" id="c2-remarks" placeholder="Remarks"></label>
+                    </div>
+                    <button class="btn btn-primary btn-sm" style="margin-top:12px;" onclick="addContract('flat2')">Add / Update Contract</button>
+                </div>
+
+                <div class="form-group" id="payment-form-flat2">
+                    <div class="form-group-title"><span class="form-dot"></span>Add / Update Rent Payment - Flat Lamlom</div>
+                    <div class="form-row" style="margin-bottom:6px;">
+                        <label>Start Month<input type="month" id="p2-start" min="2020-01" max="2100-12" onchange="calculateRentForm('flat2')"></label>
+                        <label>End Month<input type="month" id="p2-end" min="2020-01" max="2100-12" onchange="calculateRentForm('flat2')"></label>
+                        <label>Original Amount<input type="number" id="p2-original" placeholder="Auto" readonly class="read-only-input"></label>
+                        <label>Deduction Amount<input type="number" id="p2-deduction" value="0" oninput="calculateRentForm('flat2')"></label>
+                        <label>Received Amount (Final)<input type="number" id="p2-received" placeholder="Auto" readonly class="read-only-input"></label>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-field-wide">Deductions / Remarks<input type="text" id="p2-remarks" placeholder="Add remarks or balance details here" style="width:100%;"></label>
+                        <label>Highlight
+                            <select id="p2-color">
+                                <option value="">None</option>
+                                <option value="color-green">Green (Deductions)</option>
+                                <option value="color-magenta">Magenta (Special)</option>
+                                <option value="color-blue">Blue Highlight</option>
+                                <option value="color-orange">Orange Highlight</option>
+                            </select>
+                        </label>
+                    </div>
+                    <button class="btn btn-primary btn-sm" style="margin-top:12px;" onclick="addPayment('flat2')">Add / Update Payment</button>
+                </div>
+
+                <h3 style="font-size:0.78rem; color:var(--text-secondary); font-weight:600; margin:20px 0 10px;">Rent Period Receipts</h3>
+                <div class="table-wrap">
+                    <table id="payments-flat2">
+                        <thead>
+                            <tr>
+                                <th style="width:15%;">Rent Period</th>
+                                <th style="width:11%;">Original</th>
+                                <th style="width:11%;">Deduction</th>
+                                <th style="width:12%;">Received (Final)</th>
+                                <th style="width:16%;">Remarks</th>
+                                <th style="width:6%;">Bank</th>
+                                <th style="width:7%;">Color</th>
+                                <th style="width:5%;">Del</th>
+                                <th style="width:6%;">Edit</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="app-footer">
+            Flat Rent Tracker Pro &mdash; All data is stored locally in your browser via LocalStorage.
+        </div>
+    </div>
+
+    <script>
+        // --- Cloud Sync (Supabase) ---
+        const SUPABASE_URL = "https://mwnlnyobpqjuxfeqasrz.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13bmxueW9icHFqdXhmZXFhc3J6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNjQ4MzksImV4cCI6MjA5OTk0MDgzOX0.nsmBlMISJpmp9AZxn1Gfd4hs9IRkzWu8EIColXji8ko";
+        const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        // --- Seed data for Flat 1 & 2 (kept for initial load) ---
+        const flat1Seed = [
+            { period: "Jan-21 - Mar-21", original: "15000", deduction: "0", received: "15000", remarks: "", checked: true, color: "" },
+            { period: "Apr-21 - Jun-21", original: "15000", deduction: "0", received: "15000", remarks: "", checked: true, color: "" },
+            { period: "Jul-21 - Sep-21", original: "15000", deduction: "0", received: "15000", remarks: "", checked: true, color: "" },
+            { period: "Oct-21 - Dec-21", original: "15000", deduction: "0", received: "15000", remarks: "", checked: true, color: "" },
+            { period: "Jan-22 - Mar-22", original: "15000", deduction: "0", received: "15000", remarks: "", checked: true, color: "" },
+            { period: "Apr-22 - Jun-22", original: "15000", deduction: "0", received: "15000", remarks: "", checked: true, color: "" },
+            { period: "Jul-22 - Sep-22", original: "15000", deduction: "0", received: "15000", remarks: "", checked: true, color: "" },
+            { period: "Oct-22 - Dec-22", original: "15000", deduction: "0", received: "15000", remarks: "", checked: true, color: "" },
+            { period: "Jan-23 - Mar-23", original: "16500", deduction: "16500", received: "0", remarks: "(-16,500 to Desoqy) to finalize contract", checked: true, color: "color-green" },
+            { period: "Apr-23 - Jun-23", original: "16500", deduction: "0", received: "16500", remarks: "", checked: true, color: "" },
+            { period: "Jul-23 - Sep-23", original: "16500", deduction: "0", received: "16500", remarks: "", checked: true, color: "" },
+            { period: "Oct-23 - Dec-23", original: "16500", deduction: "0", received: "16500", remarks: "", checked: true, color: "" },
+            { period: "Jan-24 - Mar-24", original: "18000", deduction: "0", received: "18000", remarks: "", checked: true, color: "" },
+            { period: "Apr-24 - Jun-24", original: "18000", deduction: "78000", received: "0", remarks: "(-78,000 to Desoqy) Tasgeel Lama Flat", checked: true, color: "color-magenta" },
+            { period: "Jul-24 - Sep-24", original: "18000", deduction: "0", received: "18000", remarks: "", checked: true, color: "" },
+            { period: "Oct-24 - Dec-24", original: "18000", deduction: "0", received: "18000", remarks: "", checked: true, color: "" },
+            { period: "Jan-25 - Mar-25", original: "18000", deduction: "0", received: "18000", remarks: "", checked: true, color: "" },
+            { period: "Apr-25 - Jun-25", original: "18000", deduction: "0", received: "18000", remarks: "", checked: true, color: "" },
+            { period: "Jul-25 - Sep-25", original: "18000", deduction: "0", received: "18000", remarks: "", checked: true, color: "" },
+            { period: "Oct-25 - Dec-25", original: "18000", deduction: "39000", received: "0", remarks: "(-39,000 to Desoqy) for Egy Marriage Cert.", checked: true, color: "color-green" },
+            { period: "Jan-26 - Mar-26", original: "27000", deduction: "0", received: "27000", remarks: "", checked: true, color: "" },
+            { period: "Apr-26 - Jun-26", original: "27000", deduction: "27000", received: "0", remarks: "(-27,000 for Windows Alumetal)", checked: true, color: "color-green" },
+            { period: "Jul-26 - Sep-26", original: "27000", deduction: "27000", received: "0", remarks: "(-27,000 for Windows Alumetal)", checked: true, color: "color-green" },
+            { period: "Oct-26 - Dec-26", original: "27000", deduction: "6800", received: "20200", remarks: "(-6,800 for Windows Alumetal) Balance = 20,200", checked: false, color: "" }
+        ];
+
+        const flat2Seed = [
+            { period: "Dec-20 - Feb-21", original: "19500", deduction: "0", received: "19500", remarks: "", checked: true, color: "" },
+            { period: "Mar-21 - May-21", original: "19500", deduction: "0", received: "19500", remarks: "", checked: true, color: "" },
+            { period: "Jun-21 - Aug-21", original: "19500", deduction: "0", received: "19500", remarks: "", checked: true, color: "" },
+            { period: "Sep-21 - Nov-21", original: "19500", deduction: "0", received: "19500", remarks: "", checked: true, color: "" },
+            { period: "Dec-21 - Feb-22", original: "19500", deduction: "0", received: "19500", remarks: "", checked: true, color: "" },
+            { period: "Mar-22 - May-22", original: "15000", deduction: "0", received: "15000", remarks: "", checked: true, color: "" },
+            { period: "Jun-22 - Aug-22", original: "15000", deduction: "0", received: "15000", remarks: "", checked: true, color: "" },
+            { period: "Sep-22 - Nov-22", original: "15000", deduction: "0", received: "15000", remarks: "", checked: true, color: "" },
+            { period: "Jan-23 - Mar-23", original: "21000", deduction: "7000", received: "14000", remarks: "(-7000 to Semsar)", checked: true, color: "color-green" },
+            { period: "Apr-23 - Jun-23", original: "21000", deduction: "0", received: "21000", remarks: "", checked: true, color: "" },
+            { period: "Jul-23 - Sep-23", original: "21000", deduction: "0", received: "21000", remarks: "", checked: true, color: "" },
+            { period: "Oct-23 - Dec-23", original: "21000", deduction: "0", received: "21000", remarks: "", checked: true, color: "" },
+            { period: "Jan-24 - Mar-24", original: "21000", deduction: "0", received: "21000", remarks: "", checked: true, color: "" },
+            { period: "Apr-24 - Jun-24", original: "21000", deduction: "78000", received: "0", remarks: "(-78,000 to Desoqy) Tasgeel Lama Flat", checked: true, color: "color-magenta" },
+            { period: "Jul-24 - Sep-24", original: "21000", deduction: "0", received: "21000", remarks: "", checked: true, color: "" },
+            { period: "Oct-24 - Dec-24", original: "21000", deduction: "0", received: "21000", remarks: "", checked: true, color: "" },
+            { period: "Jan-25 - Mar-25", original: "21000", deduction: "0", received: "21000", remarks: "", checked: true, color: "" },
+            { period: "Apr-25 - Jun-25", original: "21000", deduction: "0", received: "21000", remarks: "", checked: true, color: "" },
+            { period: "Jul-25 - Sep-25", original: "21000", deduction: "0", received: "21000", remarks: "", checked: true, color: "" },
+            { period: "Oct-25 - Dec-25", original: "21000", deduction: "39000", received: "0", remarks: "(-39,000 to Desoqy) for Egy Marriage Cert.", checked: true, color: "color-green" },
+            { period: "Jan-26 - Mar-26", original: "30000", deduction: "0", received: "30000", remarks: "", checked: true, color: "" },
+            { period: "Apr-26 - Jun-26", original: "30000", deduction: "13000", received: "17000", remarks: "(-13,000 for Doc. DHL) Balance = 17000", checked: false, color: "" },
+            { period: "Jul-26 - Sep-26", original: "30000", deduction: "0", received: "30000", remarks: "", checked: true, color: "" },
+            { period: "Oct-26 - Dec-26", original: "30000", deduction: "0", received: "30000", remarks: "", checked: true, color: "" }
+        ];
+
+        // --- Helpers ---
+        function setupDefaults() {
+            const currentYearMonth = "2026-07";
+            ['c1-from','c1-to','p1-start','p1-end','c2-from','c2-to','p2-start','p2-end'].forEach(id => {
+                document.getElementById(id).value = currentYearMonth;
+            });
+        }
+
+        function formatDisplayDate(inputVal) {
+            if (!inputVal) return "";
+            const parts = inputVal.split('-');
+            const year = parts[0].substring(2);
+            const monthIndex = parseInt(parts[1]) - 1;
+            return `${monthNames[monthIndex]}-${year}`;
+        }
+
+        function parseSingleMonthString(str) {
+            const parts = str.trim().split('-');
+            if (parts.length !== 2) return null;
+            const monthIndex = monthNames.indexOf(parts[0]);
+            const year = 2000 + parseInt(parts[1]);
+            if (monthIndex === -1 || isNaN(year)) return null;
+            return new Date(year, monthIndex, 1);
+        }
+
+        function parseContractDate(dateStr) {
+            const parts = dateStr.split('-');
+            const monthIdx = monthNames.indexOf(parts[0]);
+            const year = 2000 + parseInt(parts[1]);
+            return new Date(year, monthIdx, 1);
+        }
+
+        function formatCurrency(val) {
+            if (isNaN(val) || val === 0) return "—";
+            return val.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+
+        // A period whose start and end month are the same is shown as a single label
+        // (e.g. "Jul-26"); otherwise it's shown as a range (e.g. "Jul-26 - Sep-26").
+        function formatPeriodLabel(startLabel, endLabel) {
+            return startLabel === endLabel ? startLabel : `${startLabel} - ${endLabel}`;
+        }
+
+        function parseFrequencyMonths(text) {
+            const match = (text || "").match(/\d+/);
+            const n = match ? parseInt(match[0], 10) : 3;
+            return (!n || n < 1) ? 3 : n;
+        }
+
+        function isFuturePeriod(periodStr) {
+            const parts = periodStr.split(' - ');
+            const startLabel = parts[0];
+            const start = parseSingleMonthString(startLabel);
+            if (!start) return false;
+            const now = new Date();
+            // Compare only date part (midnight)
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            return start > today;
+        }
+
+        // --- Create a row element for payments (reusable) ---
+        function createPaymentRow(period, original, deduction, received, remarks, checked, colorVal) {
+            const row = document.createElement('tr');
+            const isFuture = isFuturePeriod(period);
+            // 0: Period
+            const c0 = document.createElement('td');
+            c0.className = "rent-period-cell";
+            c0.setAttribute('data-label', 'Rent Period');
+            c0.textContent = period;
+            row.appendChild(c0);
+            // 1: Original – if future, set to "-"
+            const c1 = document.createElement('td');
+            c1.setAttribute('data-label', 'Original');
+            c1.textContent = isFuture ? "-" : (original || "0");
+            row.appendChild(c1);
+            // 2: Deduction – if future, set to "-"
+            const c2 = document.createElement('td');
+            c2.setAttribute('data-label', 'Deduction');
+            c2.textContent = isFuture ? "-" : (deduction || "0");
+            row.appendChild(c2);
+            // 3: Received – if future, set to "-"
+            const c3 = document.createElement('td');
+            c3.setAttribute('data-label', 'Received (Final)');
+            c3.textContent = isFuture ? "-" : (received || "0");
+            row.appendChild(c3);
+            // 4: Remarks – editable
+            const c4 = document.createElement('td');
+            c4.setAttribute('data-label', 'Remarks');
+            c4.innerHTML = remarks || "";
+            c4.contentEditable = "true";
+            // optional: save on blur? we'll rely on manual save
+            row.appendChild(c4);
+            // 5: Bank checkbox
+            const c5 = document.createElement('td');
+            c5.setAttribute('data-label', 'Bank');
+            const cb = document.createElement('input');
+            cb.type = "checkbox";
+            cb.checked = checked !== undefined ? checked : false;
+            cb.onchange = function() { handleRowChange(this); };
+            c5.appendChild(cb);
+            row.appendChild(c5);
+            // 6: Color
+            const c6 = document.createElement('td');
+            c6.setAttribute('data-label', 'Color');
+            const container = document.createElement('div');
+            container.className = "color-picker-container";
+            const trigger = document.createElement('div');
+            trigger.className = "color-trigger";
+            trigger.textContent = "🎨";
+            trigger.onclick = function() { togglePopover(this); };
+            const popover = document.createElement('div');
+            popover.className = "color-palette-popover";
+            ["", "color-green", "color-magenta", "color-blue", "color-orange"].forEach(opt => {
+                const o = document.createElement('div');
+                o.className = "color-opt " + (opt ? opt.replace('color-', 'opt-') : 'opt-none');
+                o.onclick = function() { selectColor(this, opt); };
+                popover.appendChild(o);
+            });
+            const hidden = document.createElement('input');
+            hidden.type = "hidden";
+            hidden.className = "hidden-color-val";
+            hidden.value = colorVal || "";
+            container.appendChild(trigger);
+            container.appendChild(popover);
+            container.appendChild(hidden);
+            c6.appendChild(container);
+            row.appendChild(c6);
+            // 7: Delete
+            const c7 = document.createElement('td');
+            c7.setAttribute('data-label', 'Delete');
+            const delBtn = document.createElement('button');
+            delBtn.className = "btn btn-danger";
+            delBtn.title = "Delete";
+            delBtn.innerHTML = "🗑️";
+            delBtn.onclick = function() { deleteRow(this); };
+            c7.appendChild(delBtn);
+            row.appendChild(c7);
+            // 8: Edit toggle (enables editing Period / Original / Deduction / Received inline)
+            const c8 = document.createElement('td');
+            c8.setAttribute('data-label', 'Edit');
+            const editBtn = document.createElement('button');
+            editBtn.className = "btn btn-edit";
+            editBtn.title = "Edit row";
+            editBtn.innerHTML = "✏️";
+            editBtn.onclick = function() { toggleEditRow(this); };
+            c8.appendChild(editBtn);
+            row.appendChild(c8);
+
+            // Apply color class if any
+            if (colorVal) {
+                row.classList.add(colorVal);
+                const targetOpt = popover.querySelector('.' + colorVal.replace('color-', 'opt-'));
+                if (targetOpt) trigger.style.background = window.getComputedStyle(targetOpt).backgroundColor;
+            }
+            if (checked === false && received && received !== "-" && received !== "" && parseFloat(received) >= 0) {
+                row.classList.add('color-yellow');
+            }
+            return row;
+        }
+
+        // --- Populate seed data into tables ---
+        function seedPaymentsTable(flatId, seedData) {
+            const tbody = document.getElementById(`payments-${flatId}`).getElementsByTagName('tbody')[0];
+            tbody.innerHTML = "";
+            seedData.forEach(item => {
+                const row = createPaymentRow(item.period, item.original, item.deduction, item.received, item.remarks, item.checked, item.color);
+                tbody.appendChild(row);
+            });
+        }
+
+        // --- Sanitize future periods: set amounts to "-" and remove colors ---
+        function sanitizeFuturePeriods(flatId) {
+            const tbody = document.getElementById(`payments-${flatId}`).getElementsByTagName('tbody')[0];
+            for (let row of tbody.rows) {
+                const period = row.cells[0].textContent.trim();
+                if (isFuturePeriod(period)) {
+                    // Set numeric cells to "-"
+                    row.cells[1].textContent = "-";
+                    row.cells[2].textContent = "-";
+                    row.cells[3].textContent = "-";
+                    // Remove any color class that might have been applied
+                    row.className = "";
+                    // Ensure bank checkbox is unchecked? we keep as is.
+                    // Also reset hidden color to empty?
+                    const hiddenInput = row.cells[6].querySelector('.hidden-color-val');
+                    if (hiddenInput) {
+                        hiddenInput.value = "";
+                        const trigger = row.cells[6].querySelector('.color-trigger');
+                        if (trigger) {
+                            trigger.style.background = 'radial-gradient(circle, rgba(255,255,255,0.8) 30%, rgba(100,116,139,0.5) 80%)';
+                        }
+                    }
+                }
+            }
+        }
+
+        // --- Sync future payment periods based on contracts ---
+        function syncPaymentPeriods(flatId) {
+            const contractRows = document.getElementById(`contracts-${flatId}`).getElementsByTagName('tbody')[0].rows;
+            if (contractRows.length === 0) return;
+            const intervals = [];
+            for (let cRow of contractRows) {
+                const fromStr = cRow.cells[0].textContent.trim();
+                const toStr = cRow.cells[1].textContent.trim();
+                const start = parseSingleMonthString(fromStr);
+                const end = parseSingleMonthString(toStr);
+                if (!start || !end) continue;
+                // Each contract carries its own payment frequency (1, 2, or 3 months)
+                const freq = parseFrequencyMonths(cRow.cells[3] ? cRow.cells[3].textContent.trim() : "3");
+                let cur = new Date(start);
+                while (cur <= end) {
+                    const year = cur.getFullYear();
+                    const month = cur.getMonth();
+                    let endBlock = new Date(year, month + freq - 1, 1);
+                    if (endBlock > end) endBlock = new Date(end);
+                    const startLabel = `${monthNames[month]}-${String(year).substring(2)}`;
+                    const endLabel = `${monthNames[endBlock.getMonth()]}-${String(endBlock.getFullYear()).substring(2)}`;
+                    intervals.push(formatPeriodLabel(startLabel, endLabel));
+                    cur.setMonth(cur.getMonth() + freq);
+                }
+            }
+            const unique = [...new Set(intervals)];
+            const tbody = document.getElementById(`payments-${flatId}`).getElementsByTagName('tbody')[0];
+            const existingPeriods = new Set();
+            for (let row of tbody.rows) {
+                existingPeriods.add(row.cells[0].textContent.trim());
+            }
+            let added = 0;
+            unique.forEach(period => {
+                if (!existingPeriods.has(period)) {
+                    // Add a blank row (all "-", unchecked bank, no color)
+                    const row = createPaymentRow(period, "-", "-", "-", "", false, "");
+                    tbody.appendChild(row);
+                    added++;
+                }
+            });
+            if (added > 0) {
+                // Sanitize future rows (set amounts to "-" if future)
+                sanitizeFuturePeriods(flatId);
+                updateKPIs();
+            }
+        }
+
+        // --- UI interactions ---
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.color-picker-container')) {
+                document.querySelectorAll('.color-palette-popover').forEach(p => p.classList.remove('active'));
+            }
+        });
+
+        function togglePopover(btn) {
+            const popover = btn.nextElementSibling;
+            const isOpen = popover.classList.contains('active');
+            document.querySelectorAll('.color-palette-popover').forEach(p => p.classList.remove('active'));
+            if (!isOpen) popover.classList.add('active');
+        }
+
+        function selectColor(opt, colorClass) {
+            const container = opt.closest('.color-picker-container');
+            const hiddenInput = container.querySelector('.hidden-color-val');
+            hiddenInput.value = colorClass;
+            const trigger = container.querySelector('.color-trigger');
+            if (colorClass) {
+                trigger.style.background = opt.style.backgroundColor || window.getComputedStyle(opt).backgroundColor;
+            } else {
+                trigger.style.background = 'radial-gradient(circle, rgba(255,255,255,0.8) 30%, rgba(100,116,139,0.5) 80%)';
+            }
+            container.querySelector('.color-palette-popover').classList.remove('active');
+            handleRowChange(trigger);
+        }
+
+        function deleteRow(btnElement) {
+            const row = btnElement.closest('tr');
+            const rentPeriod = row.cells[0].textContent.trim();
+            if (confirm(`Delete payment period "${rentPeriod}"?`)) {
+                row.remove();
+                updateKPIs();
+            }
+        }
+
+        function toggleEditRow(btnElement) {
+            const row = btnElement.closest('tr');
+            const editableCells = [row.cells[0], row.cells[1], row.cells[2], row.cells[3]];
+            const isEditing = row.classList.contains('row-editing');
+            if (!isEditing) {
+                // Enter edit mode: unlock Period / Original / Deduction / Received for direct editing
+                editableCells.forEach(cell => { cell.contentEditable = "true"; });
+                row.classList.add('row-editing');
+                btnElement.innerHTML = "💾";
+                btnElement.title = "Save changes";
+                btnElement.classList.remove('btn-edit');
+                btnElement.classList.add('btn-save');
+                editableCells[0].focus();
+            } else {
+                // Save & lock the row again
+                const newPeriod = row.cells[0].textContent.trim();
+                if (!newPeriod) { alert("Rent Period cannot be empty."); editableCells[0].focus(); return; }
+                editableCells.forEach(cell => { cell.contentEditable = "false"; });
+                row.classList.remove('row-editing');
+                btnElement.innerHTML = "✏️";
+                btnElement.title = "Edit row";
+                btnElement.classList.remove('btn-save');
+                btnElement.classList.add('btn-edit');
+                // Reuse existing recalculation logic (auto Received = Original - Deduction, row color, KPIs)
+                handleRowChange(row.cells[0]);
+            }
+        }
+
+        function handleRowChange(element) {
+            const row = element.closest('tr');
+            if (!row) return;
+            const checkbox = row.cells[5].querySelector('input[type="checkbox"]');
+            const hiddenColorInput = row.cells[6].querySelector('.hidden-color-val');
+            const finalAmountCell = row.cells[3];
+            const deductionCell = row.cells[2];
+            const isSentToBank = checkbox ? checkbox.checked : true;
+            const customColorClass = hiddenColorInput ? hiddenColorInput.value : "";
+            const amountText = finalAmountCell.textContent.trim();
+            const hasAmount = amountText !== "" && amountText !== "-" && amountText !== "0";
+            row.className = "";
+            if (!isSentToBank && hasAmount) {
+                row.classList.add('color-yellow');
+            } else if (customColorClass) {
+                row.classList.add(customColorClass);
+            }
+            // Auto-recalc received = original - deduction (only if both are numbers and not future)
+            const origText = row.cells[1].textContent.trim().replace(/,/g, '');
+            const dedText = deductionCell.textContent.trim().replace(/,/g, '');
+            const origNum = parseFloat(origText);
+            const dedNum = parseFloat(dedText);
+            if (!isNaN(origNum) && !isNaN(dedNum) && origText !== "" && dedText !== "" && origText !== "-" && dedText !== "-") {
+                const recalc = origNum - dedNum;
+                if (recalc >= 0) {
+                    finalAmountCell.textContent = recalc;
+                }
+            }
+            updateKPIs();
+        }
+
+        // --- Contract logic ---
+        function addContract(flatId) {
+            const suffix = flatId === 'flat1' ? '1' : '2';
+            const fromVal = document.getElementById(`c${suffix}-from`).value;
+            const toVal = document.getElementById(`c${suffix}-to`).value;
+            const rentVal = document.getElementById(`c${suffix}-rent`).value;
+            const freqSelect = document.getElementById(`c${suffix}-frequency`);
+            const freqLabel = freqSelect.options[freqSelect.selectedIndex].text;
+            const remarksVal = document.getElementById(`c${suffix}-remarks`).value;
+            if (!fromVal || !toVal) { alert("Please select both 'From' and 'To' dates."); return; }
+            if (!rentVal) { alert("Please enter a Monthly Rent."); return; }
+            const formattedFrom = formatDisplayDate(fromVal);
+            const formattedTo = formatDisplayDate(toVal);
+            const table = document.getElementById(`contracts-${flatId}`);
+            const tbody = table.getElementsByTagName('tbody')[0];
+            let existingRow = null;
+            for (let row of tbody.rows) {
+                if (row.cells[0].textContent.trim() === formattedFrom && row.cells[1].textContent.trim() === formattedTo) {
+                    existingRow = row;
+                    break;
+                }
+            }
+            if (existingRow) {
+                if (!confirm(`Contract "${formattedFrom}" to "${formattedTo}" exists. Update it?`)) return;
+                existingRow.cells[2].textContent = rentVal;
+                existingRow.cells[3].textContent = freqLabel;
+                existingRow.cells[4].textContent = remarksVal;
+                alert("Contract updated.");
+            } else {
+                const newRow = tbody.insertRow();
+                const contractLabels = ["From", "To", "Monthly Rent", "Frequency", "Remarks"];
+                [formattedFrom, formattedTo, rentVal, freqLabel, remarksVal].forEach((text, i) => {
+                    const c = newRow.insertCell(i);
+                    c.setAttribute('data-label', contractLabels[i]);
+                    c.textContent = text;
+                });
+                alert("Contract added.");
+            }
+            document.getElementById(`c${suffix}-rent`).value = '';
+            document.getElementById(`c${suffix}-remarks`).value = '';
+            // Recalculate payment periods based on new contracts
+            syncPaymentPeriods(flatId);
+            // Also sanitize any future periods (already done inside sync, but call again)
+            sanitizeFuturePeriods(flatId);
+            calculateRentForm(flatId);
+            recalculateReceiptsFromContracts(flatId);
+        }
+
+        function calculateRentForm(flatId) {
+            const suffix = flatId === 'flat1' ? '1' : '2';
+            const startVal = document.getElementById(`p${suffix}-start`).value;
+            const endVal = document.getElementById(`p${suffix}-end`).value;
+            const deductionInput = document.getElementById(`p${suffix}-deduction`);
+            if (!startVal || !endVal) return;
+            const startDate = new Date(startVal + "-01");
+            const endDate = new Date(endVal + "-01");
+            if (startDate > endDate) {
+                document.getElementById(`p${suffix}-original`).value = '';
+                document.getElementById(`p${suffix}-received`).value = '';
+                return;
+            }
+            const diffMonths = (endDate.getFullYear() - startDate.getFullYear()) * 12 + (endDate.getMonth() - startDate.getMonth()) + 1;
+            const contractRows = document.getElementById(`contracts-${flatId}`).getElementsByTagName('tbody')[0].rows;
+            let matchedMonthlyRent = null;
+            for (let row of contractRows) {
+                const conStart = parseContractDate(row.cells[0].textContent.trim());
+                const conEnd = parseContractDate(row.cells[1].textContent.trim());
+                const conRent = parseFloat(row.cells[2].textContent.trim());
+                if (startDate >= conStart && startDate <= conEnd) {
+                    matchedMonthlyRent = conRent;
+                    break;
+                }
+            }
+            if (matchedMonthlyRent !== null) {
+                const originalTotal = diffMonths * matchedMonthlyRent;
+                const deductionTotal = parseFloat(deductionInput.value) || 0;
+                const finalReceived = originalTotal - deductionTotal;
+                document.getElementById(`p${suffix}-original`).value = originalTotal;
+                document.getElementById(`p${suffix}-received`).value = finalReceived >= 0 ? finalReceived : 0;
+            } else {
+                document.getElementById(`p${suffix}-original`).value = "0";
+                document.getElementById(`p${suffix}-received`).value = "0";
+            }
+        }
+
+        function recalculateReceiptsFromContracts(flatId) {
+            const contractRows = document.getElementById(`contracts-${flatId}`).getElementsByTagName('tbody')[0].rows;
+            const paymentRows = document.getElementById(`payments-${flatId}`).getElementsByTagName('tbody')[0].rows;
+            const now = new Date();
+            for (let pRow of paymentRows) {
+                const periodText = pRow.cells[0].textContent.trim();
+                const dates = periodText.split(" - ");
+                const startLabel = dates[0];
+                const endLabel = dates.length >= 2 ? dates[1] : dates[0];
+                const startDate = parseSingleMonthString(startLabel);
+                const endDate = parseSingleMonthString(endLabel);
+                if (!startDate || !endDate) continue;
+                // Skip future periods – leave as "-"
+                if (startDate > now) {
+                    // Already handled by sanitize, but just in case
+                    continue;
+                }
+                let matchedRate = null;
+                for (let cRow of contractRows) {
+                    const conStart = parseContractDate(cRow.cells[0].textContent.trim());
+                    const conEnd = parseContractDate(cRow.cells[1].textContent.trim());
+                    const conRent = parseFloat(cRow.cells[2].textContent.trim());
+                    if (startDate >= conStart && startDate <= conEnd) {
+                        matchedRate = conRent;
+                        break;
+                    }
+                }
+                if (matchedRate !== null) {
+                    const diffMonths = (endDate.getFullYear() - startDate.getFullYear()) * 12 + (endDate.getMonth() - startDate.getMonth()) + 1;
+                    const calculatedOriginal = diffMonths * matchedRate;
+                    const dedText = pRow.cells[2].textContent.trim().replace(/,/g, '');
+                    let deduction = parseFloat(dedText) || 0;
+                    const remarksText = pRow.cells[4].textContent.trim();
+                    const deductionMatch = remarksText.match(/\(-\s*([0-9,]+)/);
+                    if (deductionMatch && !dedText) {
+                        deduction = parseFloat(deductionMatch[1].replace(/,/g, '')) || 0;
+                        pRow.cells[2].textContent = deduction;
+                    }
+                    pRow.cells[1].textContent = calculatedOriginal;
+                    const received = calculatedOriginal - deduction;
+                    pRow.cells[3].textContent = received >= 0 ? received : 0;
+                    const checkbox = pRow.cells[5].querySelector('input[type="checkbox"]');
+                    if (checkbox) handleRowChange(checkbox);
+                }
+            }
+            // Then sanitize future periods again (in case any were updated)
+            sanitizeFuturePeriods(flatId);
+            updateKPIs();
+        }
+
+        // --- Payment CRUD ---
+        function addPayment(flatId) {
+            const suffix = flatId === 'flat1' ? '1' : '2';
+            const startVal = document.getElementById(`p${suffix}-start`).value;
+            const endVal = document.getElementById(`p${suffix}-end`).value;
+            const originalAmount = document.getElementById(`p${suffix}-original`).value;
+            const deductionAmount = document.getElementById(`p${suffix}-deduction`).value;
+            const receivedAmount = document.getElementById(`p${suffix}-received`).value;
+            const remarks = document.getElementById(`p${suffix}-remarks`).value;
+            const colorClass = document.getElementById(`p${suffix}-color`).value;
+            if (!startVal || !endVal) { alert("Please select Start and End month."); return; }
+            const formattedPeriod = formatPeriodLabel(formatDisplayDate(startVal), formatDisplayDate(endVal));
+            // Check if this period is future – if so, we should not allow adding (or we can allow but set amounts to "-")
+            // We'll allow, but the sanitize will fix it later.
+            const table = document.getElementById(`payments-${flatId}`);
+            const tbody = table.getElementsByTagName('tbody')[0];
+            let existingRow = null;
+            for (let row of tbody.rows) {
+                if (row.cells[0].textContent.trim() === formattedPeriod) { existingRow = row; break; }
+            }
+            if (existingRow) {
+                if (!confirm(`Receipt for "${formattedPeriod}" exists. Update it?`)) return;
+                // If period is future, we store the values but sanitize will override to "-" later
+                existingRow.cells[1].textContent = originalAmount || "0";
+                existingRow.cells[2].textContent = deductionAmount || "0";
+                existingRow.cells[3].textContent = receivedAmount || "0";
+                existingRow.cells[4].innerHTML = remarks;
+                const hiddenInput = existingRow.cells[6].querySelector('.hidden-color-val');
+                if (hiddenInput) {
+                    hiddenInput.value = colorClass;
+                    const trigger = existingRow.cells[6].querySelector('.color-trigger');
+                    if (colorClass) {
+                        const styleClass = colorClass.replace('color-', 'opt-');
+                        const optElement = existingRow.cells[6].querySelector('.' + styleClass);
+                        if (optElement) trigger.style.background = window.getComputedStyle(optElement).backgroundColor;
+                    } else {
+                        trigger.style.background = 'radial-gradient(circle, rgba(255,255,255,0.8) 30%, rgba(100,116,139,0.5) 80%)';
+                    }
+                }
+                handleRowChange(hiddenInput);
+                alert(`Updated "${formattedPeriod}".`);
+            } else {
+                const row = createPaymentRow(formattedPeriod, originalAmount || "0", deductionAmount || "0", receivedAmount || "0", remarks, false, colorClass);
+                tbody.appendChild(row);
+                alert(`Added "${formattedPeriod}".`);
+            }
+            // Reset form fields
+            document.getElementById(`p${suffix}-original`).value = '';
+            document.getElementById(`p${suffix}-deduction`).value = '0';
+            document.getElementById(`p${suffix}-received`).value = '';
+            document.getElementById(`p${suffix}-remarks`).value = '';
+            document.getElementById(`p${suffix}-color`).value = '';
+            // Sanitize future periods
+            sanitizeFuturePeriods(flatId);
+            updateKPIs();
+        }
+
+        // --- KPI calculations ---
+        function calculateFlatTotals(flatId) {
+            const paymentRows = document.getElementById(`payments-${flatId}`).getElementsByTagName('tbody')[0].rows;
+            let collected = 0, pending = 0;
+            for (let row of paymentRows) {
+                const receivedText = row.cells[3].textContent.trim().replace(/,/g, '');
+                const receivedVal = parseFloat(receivedText);
+                const isChecked = row.cells[5].querySelector('input[type="checkbox"]')?.checked || false;
+                // Only count if receivedText is a valid number (not "-" or empty)
+                const hasReceived = receivedText !== "" && receivedText !== "-" && !isNaN(receivedVal) && receivedVal >= 0;
+                if (hasReceived) {
+                    collected += receivedVal;
+                    if (!isChecked) pending += receivedVal;
+                }
+            }
+            return { collected, pending };
+        }
+
+        function updateKPIs() {
+            const flat1 = calculateFlatTotals('flat1');
+            const flat2 = calculateFlatTotals('flat2');
+            const totalCollected = flat1.collected + flat2.collected;
+            const totalPending = flat1.pending + flat2.pending;
+            document.getElementById('kpi-flat1-collected').textContent = formatCurrency(flat1.collected);
+            document.getElementById('kpi-flat2-collected').textContent = formatCurrency(flat2.collected);
+            document.getElementById('kpi-total-collected').textContent = formatCurrency(totalCollected);
+            document.getElementById('kpi-pending').textContent = formatCurrency(totalPending);
+            renderDueAlerts();
+        }
+
+        // --- Alerts (unchanged) ---
+        function endOfMonthFromLabel(label) {
+            const d = parseSingleMonthString(label.trim());
+            if (!d) return null;
+            return new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59);
+        }
+
+        function startOfMonthFromLabel(label) {
+            const d = parseSingleMonthString(label.trim());
+            if (!d) return null;
+            return new Date(d.getFullYear(), d.getMonth(), 1, 0, 0, 0);
+        }
+
+        function getFlatDueStatus(flatId, flatLabel) {
+            const paymentRows = document.getElementById(`payments-${flatId}`).getElementsByTagName('tbody')[0].rows;
+            const notCollectedItems = [];
+            const pendingItems = [];
+            let latestEnd = null, latestLabel = "";
+            const now = new Date();
+            for (let row of paymentRows) {
+                const periodText = row.cells[0].textContent.trim();
+                const parts = periodText.split(' - ');
+                const startLabel = parts.length === 2 ? parts[0] : periodText;
+                const endLabel = parts.length === 2 ? parts[1] : periodText;
+                const dueDate = startOfMonthFromLabel(startLabel);
+                const endDate = endOfMonthFromLabel(endLabel);
+                if (endDate && (!latestEnd || endDate > latestEnd)) {
+                    latestEnd = endDate;
+                    latestLabel = periodText;
+                }
+                const origText = row.cells[1].textContent.trim().replace(/,/g, '');
+                const origVal = parseFloat(origText);
+                const recvText = row.cells[3].textContent.trim().replace(/,/g, '');
+                const recvVal = parseFloat(recvText);
+                const isChecked = row.cells[5].querySelector('input[type="checkbox"]')?.checked || false;
+                const hasBeenCollected = recvText !== "" && recvText !== "-" && !isNaN(recvVal) && recvVal >= 0;
+
+                if (hasBeenCollected && !isChecked) {
+                    pendingItems.push({ period: periodText, amount: recvVal });
+                }
+                const periodIsDue = dueDate ? now >= dueDate : false;
+                if (!hasBeenCollected && periodIsDue) {
+                    notCollectedItems.push({ period: periodText, amount: (!isNaN(origVal) ? origVal : 0), dueDate });
+                }
+            }
+            const overdueEligible = latestEnd && now > latestEnd;
+            const overdueMonths = overdueEligible ? (now.getFullYear() - latestEnd.getFullYear()) * 12 + (now.getMonth() - latestEnd.getMonth()) : 0;
+            return { flatLabel, notCollectedItems, pendingItems, overdue: overdueEligible, overdueMonths, latestLabel };
+        }
+
+        function renderDueAlerts() {
+            const section = document.getElementById('dueAlertsSection');
+            const headerText = document.getElementById('alertHeaderText');
+            const list = document.getElementById('alertList');
+            if (!section || !list) return;
+            const statuses = [
+                getFlatDueStatus('flat1', 'Flat 1 — Ahmad'),
+                getFlatDueStatus('flat2', 'Flat 2 — Lamlom')
+            ];
+            const items = [];
+            statuses.forEach(s => {
+                const sortedNotCollected = [...s.notCollectedItems].sort((a,b) => (a.dueDate && b.dueDate) ? a.dueDate - b.dueDate : 0);
+                sortedNotCollected.forEach(item => {
+                    const amountText = item.amount > 0 ? ` (approx. <strong>${formatCurrency(item.amount)}</strong>)` : '';
+                    items.push({
+                        severity: 'notcollected',
+                        icon: '🔴',
+                        html: `<strong>${s.flatLabel}</strong> — rent period <strong>${item.period}</strong> is due but <strong>not yet collected</strong>${amountText}.<span class="alert-tag">Not Collected</span>`
+                    });
+                });
+                if (s.overdue) {
+                    const monthsText = s.overdueMonths >= 1 ? `${s.overdueMonths} month${s.overdueMonths > 1 ? 's' : ''} overdue` : 'due now';
+                    items.push({
+                        severity: 'overdue',
+                        icon: '⏰',
+                        html: `<strong>${s.flatLabel}</strong> — no rent period recorded after <strong>${s.latestLabel || '—'}</strong>. Next period appears <strong>${monthsText}</strong>.<span class="alert-tag">Overdue</span>`
+                    });
+                }
+                s.pendingItems.forEach(item => {
+                    items.push({
+                        severity: 'pending',
+                        icon: '🏦',
+                        html: `<strong>${s.flatLabel}</strong> — rent period <strong>${item.period}</strong> collected (<strong>${formatCurrency(item.amount)}</strong>) but not yet sent to bank.<span class="alert-tag">Pending Transfer</span>`
+                    });
+                });
+            });
+            if (items.length === 0) {
+                section.className = 'alert-section is-clear';
+                headerText.textContent = 'All rents are up to date — nothing due, uncollected, or pending';
+                section.querySelector('.alert-header-icon').textContent = '✅';
+                list.innerHTML = '';
+            } else {
+                const notCollectedTotal = items.filter(i => i.severity === 'notcollected').length;
+                const overdueCount = items.filter(i => i.severity === 'overdue').length;
+                const pendingCount = items.filter(i => i.severity === 'pending').length;
+                section.className = 'alert-section has-warnings';
+                section.querySelector('.alert-header-icon').textContent = '⚠️';
+                const parts = [];
+                if (notCollectedTotal) parts.push(`${notCollectedTotal} not collected`);
+                if (overdueCount) parts.push(`${overdueCount} overdue`);
+                if (pendingCount) parts.push(`${pendingCount} pending bank transfer`);
+                headerText.textContent = `Attention needed — ${parts.join(' · ')}`;
+                list.innerHTML = items.map(i => `<div class="alert-item severity-${i.severity}"><span class="alert-icon">${i.icon}</span><span>${i.html}</span></div>`).join('');
+            }
+        }
+
+        // --- Save / Load ---
+        function getTableData(tableId, isPaymentTable) {
+            const tbody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+            const data = [];
+            for (let row of tbody.rows) {
+                if (isPaymentTable) {
+                    data.push({
+                        period: row.cells[0].textContent,
+                        originalAmount: row.cells[1].textContent,
+                        deductionAmount: row.cells[2].textContent,
+                        receivedAmount: row.cells[3].textContent,
+                        remarks: row.cells[4].innerHTML,
+                        checked: row.cells[5].querySelector('input[type="checkbox"]')?.checked || false,
+                        colorVal: row.cells[6].querySelector('.hidden-color-val')?.value || ""
+                    });
+                } else {
+                    data.push({
+                        from: row.cells[0].textContent,
+                        to: row.cells[1].textContent,
+                        rent: row.cells[2].textContent,
+                        frequency: row.cells[3].textContent,
+                        remarks: row.cells[4].textContent
+                    });
+                }
+            }
+            return data;
+        }
+
+        function saveTrackerData() {
+            const trackerData = {
+                flat1: { contracts: getTableData('contracts-flat1', false), payments: getTableData('payments-flat1', true) },
+                flat2: { contracts: getTableData('contracts-flat2', false), payments: getTableData('payments-flat2', true) }
+            };
+            localStorage.setItem('flatRentTrackerData', JSON.stringify(trackerData));
+            localStorage.setItem('rentTrackerLocalUpdatedAt', new Date().toISOString());
+            pushToCloud().then(ok => {
+                alert(ok === true ? "Progress saved successfully! (synced to cloud)" : "Progress saved successfully!");
+            });
+        }
+
+        function loadTrackerData() {
+            const savedString = localStorage.getItem('flatRentTrackerData');
+            if (!savedString) return;
+            try {
+                const data = JSON.parse(savedString);
+                if (data.flat1) {
+                    repopulateContractsTable('contracts-flat1', data.flat1.contracts);
+                    repopulatePaymentsTable('payments-flat1', data.flat1.payments);
+                }
+                if (data.flat2) {
+                    repopulateContractsTable('contracts-flat2', data.flat2.contracts);
+                    repopulatePaymentsTable('payments-flat2', data.flat2.payments);
+                }
+                // After loading, sanitize future periods
+                sanitizeFuturePeriods('flat1');
+                sanitizeFuturePeriods('flat2');
+            } catch (e) { console.error("Error loading saved data:", e); }
+        }
+
+        function repopulateContractsTable(tableId, contractData) {
+            if (!contractData) return;
+            const tbody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+            tbody.innerHTML = "";
+            const contractLabels = ["From", "To", "Monthly Rent", "Frequency", "Remarks"];
+            contractData.forEach(item => {
+                const row = tbody.insertRow();
+                [item.from, item.to, item.rent, item.frequency || "Every 3 Months", item.remarks].forEach((text, i) => {
+                    const c = row.insertCell(i);
+                    c.setAttribute('data-label', contractLabels[i]);
+                    c.textContent = text;
+                });
+            });
+        }
+
+        function repopulatePaymentsTable(tableId, paymentData) {
+            if (!paymentData) return;
+            const tbody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+            tbody.innerHTML = "";
+            paymentData.forEach(item => {
+                const row = createPaymentRow(item.period, item.originalAmount, item.deductionAmount, item.receivedAmount, item.remarks, item.checked, item.colorVal);
+                tbody.appendChild(row);
+            });
+        }
+
+        // --- Backup / Restore (portable JSON file, independent of browser localStorage) ---
+        function buildTrackerDataObject() {
+            return {
+                flat1: { contracts: getTableData('contracts-flat1', false), payments: getTableData('payments-flat1', true) },
+                flat2: { contracts: getTableData('contracts-flat2', false), payments: getTableData('payments-flat2', true) },
+                exportedAt: new Date().toISOString()
+            };
+        }
+
+        function exportDataAsJSON() {
+            const trackerData = buildTrackerDataObject();
+            const blob = new Blob([JSON.stringify(trackerData, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const dateStr = new Date().toISOString().slice(0, 10);
+            a.href = url;
+            a.download = `flat-rent-tracker-backup-${dateStr}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function triggerImportData() {
+            document.getElementById('importFileInput').click();
+        }
+
+        function importDataFromJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!data.flat1 && !data.flat2) { alert("This doesn't look like a valid backup file."); return; }
+                    if (!confirm("This will replace all current data in the tracker with the backup file's data. Continue?")) return;
+                    if (data.flat1) {
+                        repopulateContractsTable('contracts-flat1', data.flat1.contracts);
+                        repopulatePaymentsTable('payments-flat1', data.flat1.payments);
+                    }
+                    if (data.flat2) {
+                        repopulateContractsTable('contracts-flat2', data.flat2.contracts);
+                        repopulatePaymentsTable('payments-flat2', data.flat2.payments);
+                    }
+                    sanitizeFuturePeriods('flat1');
+                    sanitizeFuturePeriods('flat2');
+                    syncPaymentPeriods('flat1');
+                    syncPaymentPeriods('flat2');
+                    sanitizeFuturePeriods('flat1');
+                    sanitizeFuturePeriods('flat2');
+                    updateKPIs();
+                    // Also persist into this browser's localStorage so it's remembered here too
+                    localStorage.setItem('flatRentTrackerData', JSON.stringify(buildTrackerDataObject()));
+                    localStorage.setItem('rentTrackerLocalUpdatedAt', new Date().toISOString());
+                    pushToCloud();
+                    alert("Data restored successfully!");
+                } catch (err) {
+                    console.error("Error importing backup:", err);
+                    alert("Couldn't read that file. Please make sure it's a valid backup JSON exported from this app.");
+                } finally {
+                    event.target.value = ""; // reset so re-selecting the same file works
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // --- Cloud Sync (Supabase) ---
+        function getSyncPasscode() {
+            return localStorage.getItem('rentSyncPasscode');
+        }
+
+        function setSyncStatus(text) {
+            const el = document.getElementById('syncStatusLine');
+            if (el) el.textContent = text;
+        }
+
+        function updateSyncButtonLabel() {
+            const label = document.getElementById('cloudSyncBtnLabel');
+            if (label) label.textContent = getSyncPasscode() ? "Cloud Sync: ON" : "Cloud Sync";
+        }
+
+        async function pushToCloud() {
+            const passcode = getSyncPasscode();
+            if (!passcode || !supabaseClient) return false;
+            try {
+                const nowIso = new Date().toISOString();
+                const { error } = await supabaseClient
+                    .from('rent_tracker_sync')
+                    .upsert({ passcode: passcode, data: buildTrackerDataObject(), updated_at: nowIso });
+                if (error) throw error;
+                localStorage.setItem('rentTrackerLocalUpdatedAt', nowIso);
+                setSyncStatus("Cloud sync: last updated just now");
+                return true;
+            } catch (err) {
+                console.error("Cloud push failed:", err);
+                setSyncStatus("Cloud sync: couldn't reach server");
+                return false;
+            }
+        }
+
+        function applyCloudData(data) {
+            if (data.flat1) {
+                repopulateContractsTable('contracts-flat1', data.flat1.contracts);
+                repopulatePaymentsTable('payments-flat1', data.flat1.payments);
+            }
+            if (data.flat2) {
+                repopulateContractsTable('contracts-flat2', data.flat2.contracts);
+                repopulatePaymentsTable('payments-flat2', data.flat2.payments);
+            }
+            sanitizeFuturePeriods('flat1');
+            sanitizeFuturePeriods('flat2');
+            syncPaymentPeriods('flat1');
+            syncPaymentPeriods('flat2');
+            sanitizeFuturePeriods('flat1');
+            sanitizeFuturePeriods('flat2');
+            updateKPIs();
+            localStorage.setItem('flatRentTrackerData', JSON.stringify(buildTrackerDataObject()));
+        }
+
+        async function syncNow(isManualSetup) {
+            const passcode = getSyncPasscode();
+            if (!passcode || !supabaseClient) return;
+            setSyncStatus("Cloud sync: checking…");
+            try {
+                const { data: rows, error } = await supabaseClient
+                    .from('rent_tracker_sync')
+                    .select('data, updated_at')
+                    .eq('passcode', passcode)
+                    .limit(1);
+                if (error) throw error;
+                const cloudRow = rows && rows[0];
+                const localTs = localStorage.getItem('rentTrackerLocalUpdatedAt');
+
+                if (cloudRow) {
+                    const cloudTs = new Date(cloudRow.updated_at);
+                    if (!localTs || cloudTs > new Date(localTs)) {
+                        applyCloudData(cloudRow.data);
+                        localStorage.setItem('rentTrackerLocalUpdatedAt', cloudRow.updated_at);
+                        setSyncStatus("Cloud sync: pulled latest data from another device");
+                        if (isManualSetup) alert("Found existing synced data for this passcode — loaded it in.");
+                    } else if (new Date(localTs) > cloudTs) {
+                        await pushToCloud();
+                    } else {
+                        setSyncStatus("Cloud sync: up to date");
+                    }
+                } else {
+                    // No cloud record yet for this passcode — seed it with what's on this device
+                    await pushToCloud();
+                    if (isManualSetup) alert("Cloud sync is on. This device's data is now the starting point — open the app with the same passcode on your other device to pull it in.");
+                }
+            } catch (err) {
+                console.error("Cloud sync failed:", err);
+                setSyncStatus("Cloud sync: couldn't reach server");
+            }
+            updateSyncButtonLabel();
+        }
+
+        function openSyncSettings() {
+            const current = getSyncPasscode();
+            const msg = current
+                ? `Cloud sync is ON.\n\nEnter a new passcode to switch/change it, clear the box and press OK to turn sync OFF on this device, or press Cancel to leave it as is.`
+                : `Enter a passcode to turn on cloud sync. Use the exact same passcode on every device you want kept in sync — write it down somewhere safe, it's the only way to reconnect your data.`;
+            const input = prompt(msg, current || "");
+            if (input === null) return;
+            if (input.trim() === "") {
+                localStorage.removeItem('rentSyncPasscode');
+                setSyncStatus("");
+                updateSyncButtonLabel();
+                alert("Cloud sync turned off on this device. Your data stays saved locally as before.");
+                return;
+            }
+            localStorage.setItem('rentSyncPasscode', input.trim());
+            updateSyncButtonLabel();
+            syncNow(true);
+        }
+
+        function initCloudSync() {
+            updateSyncButtonLabel();
+            if (getSyncPasscode()) syncNow(false);
+        }
+
+        // --- Excel Export (unchanged, but will now show "-" for future periods) ---
+        function exportToExcelFormatted() {
+            const wb = XLSX.utils.book_new();
+            wb.Props = { Title: "Rent Collection Report", Subject: "Flat Rent Tracker", Author: "Flat Rent Tracker Pro", CreatedDate: new Date() };
+            const ws = {};
+            const colors = {
+                titleBg: "0F172A", titleText: "FFFFFF", headerBg: "334155", headerText: "FFFFFF",
+                subHeaderBg: "F8FAFC", subHeaderText: "334155", flat1Bg: "E0F2FE", flat2Bg: "F3E8FF",
+                borderLight: "E2E8F0", borderDark: "94A3B8", altRow: "F8FAFC", white: "FFFFFF",
+                successBg: "DCFCE7", successText: "166534", warningBg: "FEF9C3", warningText: "854D0E",
+                pendingBg: "F1F5F9", pendingText: "475569"
+            };
+            const getFill = (hex) => ({ fgColor: { rgb: hex } });
+            const bLight = { style: "thin", color: { rgb: colors.borderLight } };
+            const bDark = { style: "thin", color: { rgb: colors.borderDark } };
+            const bNone = { style: "none" };
+            const B_DATA = { top: bLight, bottom: bLight, left: bLight, right: bLight };
+            const B_HEADER = { top: bDark, bottom: bDark, left: bDark, right: bDark };
+            const B_NO_BORDER = { top: bNone, bottom: bNone, left: bNone, right: bNone };
+            const F_TITLE = { name: "Segoe UI", sz: 16, bold: true, color: { rgb: colors.titleText } };
+            const F_SUBTITLE = { name: "Segoe UI", sz: 10, italic: true, color: { rgb: "64748B" } };
+            const F_HEADER = { name: "Segoe UI", sz: 11, bold: true, color: { rgb: colors.headerText } };
+            const F_SUBHEADER = { name: "Segoe UI", sz: 10, bold: true, color: { rgb: colors.subHeaderText } };
+            const F_DATA = { name: "Segoe UI", sz: 10, color: { rgb: "1E293B" } };
+            const F_DATA_BOLD = { name: "Segoe UI", sz: 10, bold: true, color: { rgb: "0F172A" } };
+            const AL_C = { horizontal: "center", vertical: "center", wrapText: true };
+            const AL_L = { horizontal: "left", vertical: "center", wrapText: true };
+            const AL_R = { horizontal: "right", vertical: "center" };
+
+            const W = (r, c, val, font, fill, align, border, numFmt) => {
+                const ref = String.fromCharCode(65 + c) + (r + 1);
+                const t = (typeof val === 'number') ? 'n' : 's';
+                const cell = { v: val, t, s: { font: font || F_DATA, alignment: align || AL_C, border: border || B_DATA } };
+                if (fill) cell.s.fill = fill;
+                if (numFmt) cell.s.numFmt = numFmt;
+                ws[ref] = cell;
+            };
+
+            const f1 = calculateFlatTotals('flat1');
+            const f2 = calculateFlatTotals('flat2');
+            const grandTotal = f1.collected + f2.collected;
+            const grandPending = f1.pending + f2.pending;
+            let row = 0;
+            const today = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+            W(row, 0, "RENT COLLECTION REPORT", F_TITLE, getFill(colors.titleBg), AL_C, B_NO_BORDER);
+            for (let c = 1; c <= 7; c++) W(row, c, "", F_TITLE, getFill(colors.titleBg), AL_C, B_NO_BORDER);
+            row++;
+            W(row, 0, `Generated on: ${today}`, F_SUBTITLE, null, AL_L, B_NO_BORDER);
+            row++; row++;
+
+            W(row, 0, "FINANCIAL SUMMARY", F_HEADER, getFill(colors.headerBg), AL_L, B_HEADER);
+            for (let c = 1; c <= 7; c++) W(row, c, "", F_HEADER, getFill(colors.headerBg), AL_L, B_HEADER);
+            row++;
+            const kpiLabels = ["Flat 1 — Ahmad", "Flat 2 — Lamlom", "Combined Total", "Pending (Not to Bank)"];
+            const kpiColors = [colors.flat1Bg, colors.flat2Bg, "E2E8F0", colors.warningBg];
+            kpiLabels.forEach((label, i) => {
+                if (i > 3) return;
+                W(row, i*2, label, F_SUBHEADER, getFill(kpiColors[i]), AL_C, B_DATA);
+                W(row, i*2+1, "", F_SUBHEADER, getFill(kpiColors[i]), AL_C, B_DATA);
+            });
+            row++;
+            const kpiValues = [f1.collected, f2.collected, grandTotal, grandPending];
+            kpiValues.forEach((val, i) => {
+                if (i > 3) return;
+                W(row, i*2, val, { name: "Segoe UI", sz: 12, bold: true, color: { rgb: (i===3 && val>0) ? colors.warningText : "0F172A" } }, null, AL_R, B_DATA, '#,##0');
+                W(row, i*2+1, "", F_DATA, null, AL_C, B_DATA);
+            });
+            row++; row++;
+
+            const sections = [
+                { label: "Flat 1 — Ahmad", flatId: "flat1", headerColor: "0284C7" },
+                { label: "Flat 2 — Lamlom", flatId: "flat2", headerColor: "7C3AED" }
+            ];
+
+            sections.forEach((section) => {
+                // Contracts
+                W(row, 0, `${section.label} Contracts`, F_HEADER, getFill(section.headerColor), AL_L, B_HEADER);
+                for (let c = 1; c <= 7; c++) W(row, c, "", F_HEADER, getFill(section.headerColor), AL_L, B_HEADER);
+                row++;
+                const conCols = ["From", "To", "Monthly Rent", "Frequency", "Remarks"];
+                conCols.forEach((h, i) => W(row, i, h, F_SUBHEADER, getFill(colors.subHeaderBg), AL_C, B_DATA));
+                row++;
+                const conRows = document.getElementById(`contracts-${section.flatId}`).getElementsByTagName('tbody')[0].rows;
+                if (conRows.length === 0) { W(row, 0, "No contracts defined", F_SUBTITLE, null, AL_L, B_DATA); row++; }
+                else {
+                    for (let i = 0; i < conRows.length; i++) {
+                        const r = conRows[i];
+                        const altFill = i % 2 === 0 ? getFill(colors.white) : getFill(colors.altRow);
+                        W(row, 0, r.cells[0].textContent.trim(), F_DATA, altFill, AL_C, B_DATA);
+                        W(row, 1, r.cells[1].textContent.trim(), F_DATA, altFill, AL_C, B_DATA);
+                        W(row, 2, Number(r.cells[2].textContent.trim()) || 0, F_DATA_BOLD, altFill, AL_R, B_DATA, '#,##0');
+                        W(row, 3, r.cells[3].textContent.trim(), F_DATA, altFill, AL_C, B_DATA);
+                        W(row, 4, r.cells[4].textContent.trim(), F_DATA, altFill, AL_L, B_DATA);
+                        row++;
+                    }
+                }
+                row++;
+
+                // Receipts
+                W(row, 0, `${section.label} Receipts`, F_HEADER, getFill(section.headerColor), AL_L, B_HEADER);
+                for (let c = 1; c <= 7; c++) W(row, c, "", F_HEADER, getFill(section.headerColor), AL_L, B_HEADER);
+                row++;
+                const recCols = ["Period", "Original", "Deduction", "Received", "Status", "Remarks"];
+                recCols.forEach((h, i) => W(row, i, h, F_SUBHEADER, getFill(colors.subHeaderBg), AL_C, B_DATA));
+                row++;
+                const payRows = document.getElementById(`payments-${section.flatId}`).getElementsByTagName('tbody')[0].rows;
+                if (payRows.length === 0) { W(row, 0, "No receipts recorded", F_SUBTITLE, null, AL_L, B_DATA); row++; }
+                else {
+                    for (let i = 0; i < payRows.length; i++) {
+                        const r = payRows[i];
+                        const altFill = i % 2 === 0 ? null : getFill(colors.altRow);
+                        const orig = r.cells[1].textContent.trim();
+                        const origVal = (orig !== "-" && orig !== "") ? (Number(orig) || orig) : "-";
+                        const ded = r.cells[2].textContent.trim();
+                        const dedVal = (ded !== "-" && ded !== "") ? (Number(ded) || ded) : "-";
+                        const rec = r.cells[3].textContent.trim();
+                        const recVal = (rec !== "-" && rec !== "") ? (Number(rec) || rec) : "-";
+                        const remarks = r.cells[4].innerText.replace(/[\n\r]+/g, " ");
+                        const isChecked = r.cells[5].querySelector('input[type="checkbox"]')?.checked || false;
+                        const hiddenColor = r.cells[6].querySelector('.hidden-color-val');
+                        const selColor = hiddenColor ? hiddenColor.value : "";
+
+                        let status = "No Payment";
+                        let statusColor = colors.pendingBg;
+                        let statusTextColor = colors.pendingText;
+                        const hasReceived = (recVal !== "-" && recVal !== "" && recVal !== 0);
+                        if (hasReceived) {
+                            if (isChecked) { status = "Sent to Bank"; statusColor = colors.successBg; statusTextColor = colors.successText; }
+                            else { status = "Pending Transfer"; statusColor = colors.warningBg; statusTextColor = colors.warningText; }
+                        }
+                        const rowColorMap = {
+                            'color-green': "D1FAE5", 'color-magenta': "FCE7F3", 'color-yellow': "FEF9C3",
+                            'color-blue': "DBEAFE", 'color-orange': "FFEDD5"
+                        };
+                        const rowFill = selColor ? getFill(rowColorMap[selColor] || colors.white) : altFill;
+
+                        W(row, 0, r.cells[0].textContent.trim(), F_DATA, rowFill, AL_C, B_DATA);
+                        if (typeof origVal === 'number') W(row, 1, origVal, F_DATA, rowFill, AL_R, B_DATA, '#,##0');
+                        else W(row, 1, origVal, F_DATA, rowFill, AL_C, B_DATA);
+                        if (typeof dedVal === 'number') W(row, 2, dedVal, F_DATA, rowFill, AL_R, B_DATA, '#,##0');
+                        else W(row, 2, dedVal, F_DATA, rowFill, AL_C, B_DATA);
+                        if (typeof recVal === 'number') W(row, 3, recVal, F_DATA_BOLD, rowFill, AL_R, B_DATA, '#,##0');
+                        else W(row, 3, recVal, F_DATA_BOLD, rowFill, AL_C, B_DATA);
+
+                        const statusFont = { name: "Segoe UI", sz: 9, bold: true, color: { rgb: statusTextColor } };
+                        W(row, 4, status, statusFont, getFill(statusColor), AL_C, B_DATA);
+                        W(row, 5, remarks, F_DATA, rowFill, AL_L, B_DATA);
+                        row++;
+                    }
+                }
+                row++;
+            });
+
+            // Totals
+            W(row, 0, "REPORT TOTALS", F_HEADER, getFill(colors.headerBg), AL_L, B_HEADER);
+            for (let c = 1; c <= 7; c++) W(row, c, "", F_HEADER, getFill(colors.headerBg), AL_L, B_HEADER);
+            row++;
+            const totalRowFont = { name: "Segoe UI", sz: 11, bold: true, color: { rgb: "0F172A" } };
+            const summaryRows = [];
+            summaryRows.push(row);
+            W(row, 0, "Grand Total Collected (Both Flats)", F_DATA, getFill(colors.successBg), AL_L, B_DATA);
+            for (let c = 1; c <= 4; c++) W(row, c, "", F_DATA, getFill(colors.successBg), AL_L, B_DATA);
+            W(row, 5, grandTotal, totalRowFont, getFill(colors.successBg), AL_R, B_DATA, '#,##0');
+            row++;
+            summaryRows.push(row);
+            W(row, 0, "Grand Total Pending (Awaiting Bank Transfer)", F_DATA, getFill(colors.warningBg), AL_L, B_DATA);
+            for (let c = 1; c <= 4; c++) W(row, c, "", F_DATA, getFill(colors.warningBg), AL_L, B_DATA);
+            W(row, 5, grandPending, totalRowFont, getFill(colors.warningBg), AL_R, B_DATA, '#,##0');
+            row++; row++;
+
+            W(row, 0, "Report generated automatically from Flat Rent Tracker Pro.", F_SUBTITLE, null, AL_L, B_NO_BORDER);
+            row++;
+            W(row, 0, "All figures are shown in the currency used within the tracker. This report is confidential.", F_SUBTITLE, null, AL_L, B_NO_BORDER);
+
+            const merges = [
+                { s: { r: 0, c: 0 }, e: { r: 0, c: 7 } },
+                { s: { r: 1, c: 0 }, e: { r: 1, c: 7 } }
+            ];
+            summaryRows.forEach(r => merges.push({ s: { r: r, c: 0 }, e: { r: r, c: 4 } }));
+            for (const key in ws) {
+                if (key.startsWith('A')) {
+                    const r = parseInt(key.substring(1)) - 1;
+                    if (ws[key] && ws[key].s && ws[key].s.fill &&
+                        (ws[key].s.fill.fgColor.rgb === colors.headerBg ||
+                         ws[key].s.fill.fgColor.rgb === "0284C7" ||
+                         ws[key].s.fill.fgColor.rgb === "7C3AED")) {
+                        merges.push({ s: { r: r, c: 0 }, e: { r: r, c: 7 } });
+                    }
+                }
+            }
+            ws['!merges'] = merges;
+            ws['!cols'] = [{ wch: 22 }, { wch: 14 }, { wch: 14 }, { wch: 16 }, { wch: 20 }, { wch: 40 }];
+            ws['!ref'] = `A1:F${row}`;
+            ws['!print'] = { orientation: 'landscape', fitToWidth: 1, fitToHeight: 0 };
+            const rowHeights = [];
+            rowHeights[0] = { hpx: 30 };
+            ws['!rows'] = rowHeights;
+
+            XLSX.utils.book_append_sheet(wb, ws, "Rent Tracker");
+            XLSX.writeFile(wb, `Flat_Rent_Tracker_${new Date().toISOString().slice(0,10)}.xlsx`);
+        }
+
+        // --- Init ---
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const topbar = document.querySelector('.topbar');
+            const offset = (topbar ? topbar.offsetHeight : 0) + 14;
+            const top = el.getBoundingClientRect().top + window.pageYOffset - offset;
+            window.scrollTo({ top: top, behavior: 'smooth' });
+            el.style.transition = 'box-shadow 0.3s ease';
+            el.style.boxShadow = '0 0 0 2px var(--accent-primary)';
+            setTimeout(() => { el.style.boxShadow = ''; }, 1200);
+        }
+
+        window.onload = function() {
+            setupDefaults();
+            // Seed tables with default data if empty
+            const t1 = document.getElementById('payments-flat1').getElementsByTagName('tbody')[0];
+            const t2 = document.getElementById('payments-flat2').getElementsByTagName('tbody')[0];
+            if (t1.rows.length === 0) seedPaymentsTable('flat1', flat1Seed);
+            if (t2.rows.length === 0) seedPaymentsTable('flat2', flat2Seed);
+            loadTrackerData();
+            // After loading, sync future periods based on contracts
+            syncPaymentPeriods('flat1');
+            syncPaymentPeriods('flat2');
+            // Sanitize again (in case sync added rows)
+            sanitizeFuturePeriods('flat1');
+            sanitizeFuturePeriods('flat2');
+            calculateRentForm('flat1');
+            calculateRentForm('flat2');
+            updateKPIs();
+            initCloudSync();
+        };
+    </script>
+
+    <div class="quick-jump-fab" id="quickJumpFab">
+        <button class="fab-btn fab-flat1" onclick="scrollToSection('payment-form-flat1')" title="Jump to Flat 1 — Add Payment">🏢<span>1</span></button>
+        <button class="fab-btn fab-flat2" onclick="scrollToSection('payment-form-flat2')" title="Jump to Flat 2 — Add Payment">🏢<span>2</span></button>
+    </div>
+</body>
+</html>
