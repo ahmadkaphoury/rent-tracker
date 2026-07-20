@@ -1,0 +1,3604 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Rent Tracker" />
+    <meta name="theme-color" content="#f0f4f8" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>Flat Rent Tracker Pro</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%232b6cb0'/%3E%3Cstop offset='1' stop-color='%23805ad5'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23g)'/%3E%3Ctext x='50' y='66' font-size='54' text-anchor='middle'%3E%F0%9F%8F%A2%3C/text%3E%3C/svg%3E" />
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        /* ===== LIGHT THEME (default) ===== */
+        :root {
+            --bg-body: #f0f4f8;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --bg-glass: rgba(255, 255, 255, 0.75);
+            --bg-input: #f8fafc;
+            --bg-hover: #f1f5f9;
+
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+
+            --border-subtle: #e2e8f0;
+            --border-medium: #cbd5e1;
+            --border-strong: #94a3b8;
+
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.10), 0 4px 12px rgba(0, 0, 0, 0.04);
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+
+            --flat1-primary: #2563eb;
+            --flat1-light: #eff6ff;
+            --flat1-border: #bfdbfe;
+            --flat1-accent: #0ea5e9;
+            --flat1-badge: #dbeafe;
+            --flat1-form-bg: #f0f7ff;
+            --flat1-form-border: #bfdbfe;
+            --flat1-table-header: #dbeafe;
+            --flat1-btn-hover: #1d4ed8;
+            --flat1-card-bg: #f8faff;
+
+            --flat2-primary: #7c3aed;
+            --flat2-light: #f5f3ff;
+            --flat2-border: #ddd6fe;
+            --flat2-accent: #a78bfa;
+            --flat2-badge: #ede9fe;
+            --flat2-form-bg: #f5f0ff;
+            --flat2-form-border: #ddd6fe;
+            --flat2-table-header: #ede9fe;
+            --flat2-btn-hover: #6d28d9;
+            --flat2-card-bg: #faf8ff;
+
+            --success: #10b981;
+            --success-bg: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-bg: #fffbeb;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --info: #3b82f6;
+            --info-bg: #eff6ff;
+
+            --radius: 10px;
+
+            /* table compactness */
+            --td-padding: 3px 5px;
+            --td-font-size: 0.68rem;
+            --th-font-size: 0.56rem;
+            --th-padding: 4px 5px;
+            --row-gap: 0;
+        }
+
+        /* ===== DARK THEME ===== */
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-card: #1e293b;
+            --bg-glass: rgba(30, 41, 59, 0.85);
+            --bg-input: #2d3748;
+            --bg-hover: #2d3748;
+
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --text-light: #64748b;
+
+            --border-subtle: #334155;
+            --border-medium: #475569;
+            --border-strong: #64748b;
+
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
+
+            --flat1-primary: #3b82f6;
+            --flat1-light: #1e293b;
+            --flat1-border: #334155;
+            --flat1-accent: #0ea5e9;
+            --flat1-badge: #1e293b;
+            --flat1-form-bg: #1e293b;
+            --flat1-form-border: #334155;
+            --flat1-table-header: #1e293b;
+            --flat1-btn-hover: #2563eb;
+            --flat1-card-bg: #1e293b;
+
+            --flat2-primary: #8b5cf6;
+            --flat2-light: #1e293b;
+            --flat2-border: #334155;
+            --flat2-accent: #a78bfa;
+            --flat2-badge: #1e293b;
+            --flat2-form-bg: #1e293b;
+            --flat2-form-border: #334155;
+            --flat2-table-header: #1e293b;
+            --flat2-btn-hover: #7c3aed;
+            --flat2-card-bg: #1e293b;
+
+            --success: #34d399;
+            --success-bg: #064e3b;
+            --warning: #fbbf24;
+            --warning-bg: #78350f;
+            --danger: #f87171;
+            --danger-bg: #7f1d1d;
+            --info: #60a5fa;
+            --info-bg: #1e3a5f;
+
+            --color-yellow-bg: #78350f;
+            --color-yellow-text: #fcd34d;
+            --color-green-bg: #064e3b;
+            --color-green-text: #6ee7b7;
+            --color-magenta-bg: #701a45;
+            --color-magenta-text: #f472b6;
+            --color-blue-bg: #1e3a5f;
+            --color-blue-text: #93c5fd;
+            --color-orange-bg: #7c2d12;
+            --color-orange-text: #fb923c;
+        }
+
+        /* ===== DARK OVERRIDES FOR ROW COLORS ===== */
+        [data-theme="dark"] .color-yellow {
+            background: var(--color-yellow-bg) !important;
+        }
+        [data-theme="dark"] .color-yellow td {
+            color: var(--color-yellow-text) !important;
+        }
+        [data-theme="dark"] .color-green {
+            background: var(--color-green-bg) !important;
+        }
+        [data-theme="dark"] .color-green td {
+            color: var(--color-green-text) !important;
+        }
+        [data-theme="dark"] .color-magenta {
+            background: var(--color-magenta-bg) !important;
+        }
+        [data-theme="dark"] .color-magenta td {
+            color: var(--color-magenta-text) !important;
+        }
+        [data-theme="dark"] .color-blue {
+            background: var(--color-blue-bg) !important;
+        }
+        [data-theme="dark"] .color-blue td {
+            color: var(--color-blue-text) !important;
+        }
+        [data-theme="dark"] .color-orange {
+            background: var(--color-orange-bg) !important;
+        }
+        [data-theme="dark"] .color-orange td {
+            color: var(--color-orange-text) !important;
+        }
+
+        [data-theme="dark"] .topbar {
+            background: rgba(30, 41, 59, 0.9);
+            border-bottom-color: var(--border-subtle);
+        }
+        [data-theme="dark"] .topbar-brand h1 {
+            color: var(--text-primary);
+        }
+        [data-theme="dark"] .btn-outline {
+            background: var(--bg-surface);
+            color: var(--text-secondary);
+            border-color: var(--border-medium);
+        }
+        [data-theme="dark"] .btn-outline:hover {
+            background: var(--bg-hover);
+            border-color: var(--text-muted);
+        }
+        [data-theme="dark"] .kpi-card {
+            background: var(--bg-surface);
+            border-color: var(--border-subtle);
+        }
+        [data-theme="dark"] .kpi-value {
+            color: var(--text-primary);
+        }
+        [data-theme="dark"] .section-card {
+            background: var(--bg-surface);
+            border-color: var(--border-subtle);
+        }
+        [data-theme="dark"] .section-card:hover {
+            border-color: var(--border-medium);
+        }
+        [data-theme="dark"] .form-group {
+            background: var(--bg-surface);
+            border-color: var(--border-subtle);
+        }
+        [data-theme="dark"] .form-row input,
+        [data-theme="dark"] .form-row select {
+            background: var(--bg-input);
+            color: var(--text-primary);
+            border-color: var(--border-medium);
+        }
+        [data-theme="dark"] .form-row input:focus,
+        [data-theme="dark"] .form-row select:focus {
+            border-color: var(--flat1-primary);
+        }
+        [data-theme="dark"] .read-only-input {
+            background: #2d3748 !important;
+            color: var(--flat1-primary) !important;
+        }
+        [data-theme="dark"] .table-wrap {
+            background: var(--bg-surface);
+            border-color: var(--border-subtle);
+        }
+        [data-theme="dark"] table thead th {
+            background: var(--bg-surface);
+            color: var(--text-secondary);
+            border-bottom-color: var(--border-medium);
+        }
+        [data-theme="dark"] tbody td {
+            color: var(--text-primary);
+            border-bottom-color: var(--border-subtle);
+        }
+        [data-theme="dark"] tbody tr:nth-child(even):not([class*="color-"]) td {
+            background: #162135;
+        }
+        [data-theme="dark"] tbody tr:hover td {
+            background: var(--bg-hover);
+        }
+        [data-theme="dark"] .alert-section {
+            background: var(--bg-surface);
+            border-color: var(--border-subtle);
+        }
+        [data-theme="dark"] .alert-item {
+            background: var(--bg-surface);
+            border-color: var(--border-subtle);
+        }
+        [data-theme="dark"] .app-footer {
+            background: var(--bg-surface);
+            border-top-color: var(--border-subtle);
+            color: var(--text-muted);
+        }
+        [data-theme="dark"] #flat1-section {
+            background: var(--flat1-card-bg);
+            border-left-color: var(--flat1-primary);
+            border-top-color: var(--flat1-border);
+        }
+        [data-theme="dark"] #flat1-section .section-title .title-icon {
+            background: var(--flat1-light);
+            color: var(--flat1-primary);
+            border-color: var(--flat1-border);
+        }
+        [data-theme="dark"] #flat1-section .form-group {
+            background: var(--flat1-form-bg);
+            border-color: var(--flat1-form-border);
+        }
+        [data-theme="dark"] #flat1-section thead th {
+            background: var(--flat1-table-header);
+            color: var(--flat1-primary);
+        }
+        [data-theme="dark"] #flat2-section {
+            background: var(--flat2-card-bg);
+            border-left-color: var(--flat2-primary);
+            border-top-color: var(--flat2-border);
+        }
+        [data-theme="dark"] #flat2-section .section-title .title-icon {
+            background: var(--flat2-light);
+            color: var(--flat2-primary);
+            border-color: var(--flat2-border);
+        }
+        [data-theme="dark"] #flat2-section .form-group {
+            background: var(--flat2-form-bg);
+            border-color: var(--flat2-form-border);
+        }
+        [data-theme="dark"] #flat2-section thead th {
+            background: var(--flat2-table-header);
+            color: var(--flat2-primary);
+        }
+
+        [data-theme="dark"] .color-palette-popover {
+            background: var(--bg-surface);
+            border-color: var(--border-medium);
+        }
+        [data-theme="dark"] .color-trigger {
+            border-color: var(--border-medium);
+        }
+
+        [data-theme="dark"] .btn-edit {
+            color: var(--flat1-primary);
+        }
+        [data-theme="dark"] .btn-edit:hover {
+            background: var(--flat1-light);
+        }
+
+        [data-theme="dark"] .btn-danger {
+            color: var(--danger);
+        }
+        [data-theme="dark"] .btn-danger:hover {
+            background: var(--danger-bg);
+        }
+
+        [data-theme="dark"] .btn-save {
+            background: rgba(52, 211, 153, 0.15);
+            color: var(--success);
+        }
+        [data-theme="dark"] .btn-save:hover {
+            background: rgba(52, 211, 153, 0.25);
+        }
+
+        [data-theme="dark"] input[type="checkbox"] {
+            background: var(--bg-input);
+            border-color: var(--border-medium);
+        }
+        [data-theme="dark"] input[type="checkbox"]:checked {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        [data-theme="dark"] .alert-section.is-clear {
+            border-color: #065f46;
+            background: var(--success-bg);
+        }
+        [data-theme="dark"] .alert-section.has-warnings {
+            border-color: #991b1b;
+            background: var(--danger-bg);
+        }
+        [data-theme="dark"] .is-clear .alert-header {
+            color: #6ee7b7;
+        }
+        [data-theme="dark"] .has-warnings .alert-header {
+            color: #fca5a5;
+        }
+
+        [data-theme="dark"] .quick-jump-fab .fab-btn {
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* ===== BASE ===== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            line-height: 1.4;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+            overscroll-behavior-y: none;
+            transition: background 0.25s ease, color 0.25s ease;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-medium);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--border-strong);
+        }
+
+        /* ===== TOPBAR ===== */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 10px 20px;
+            padding-top: calc(10px + env(safe-area-inset-top));
+            background: var(--bg-glass);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-bottom: 1px solid var(--border-subtle);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+            transition: background 0.25s ease, border-color 0.25s ease;
+        }
+
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .topbar-brand .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--flat1-primary), var(--flat2-primary));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+            flex-shrink: 0;
+            color: #fff;
+        }
+        .topbar-brand h1 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            transition: color 0.25s ease;
+        }
+        .topbar-tagline {
+            font-size: 0.6rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            letter-spacing: 0.02em;
+            margin-top: 1px;
+        }
+        .topbar-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* Night mode toggle */
+        .theme-toggle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 1px solid var(--border-medium);
+            background: var(--bg-surface);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+            touch-action: manipulation;
+            padding: 0;
+            flex-shrink: 0;
+        }
+        .theme-toggle:hover {
+            background: var(--bg-hover);
+            transform: scale(1.05);
+        }
+        .theme-toggle:active {
+            transform: scale(0.92);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            border: none;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            outline: none;
+            touch-action: manipulation;
+            user-select: none;
+            white-space: nowrap;
+            box-shadow: var(--shadow-sm);
+        }
+        .btn:active {
+            transform: scale(0.97);
+        }
+        .btn:focus-visible {
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-primary {
+            background: var(--flat1-primary);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--flat1-btn-hover);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #fff;
+        }
+        .btn-success:hover {
+            background: #059669;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline {
+            background: var(--bg-surface);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-medium);
+            box-shadow: none;
+        }
+        .btn-outline:hover {
+            background: var(--bg-hover);
+            border-color: var(--text-muted);
+        }
+
+        .btn-danger {
+            background: transparent;
+            color: var(--danger);
+            padding: 3px 6px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            box-shadow: none;
+            min-width: 22px;
+            min-height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-danger:hover {
+            background: var(--danger-bg);
+            transform: scale(1.1);
+        }
+        .btn-danger:active {
+            transform: scale(0.95);
+        }
+
+        .btn-edit {
+            background: transparent;
+            color: var(--flat1-primary);
+            padding: 3px 6px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            box-shadow: none;
+            min-width: 22px;
+            min-height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-edit:hover {
+            background: var(--flat1-light);
+            transform: scale(1.1);
+        }
+        .btn-edit:active {
+            transform: scale(0.95);
+        }
+
+        .btn-save {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            padding: 3px 6px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            box-shadow: none;
+            min-width: 22px;
+            min-height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-save:hover {
+            background: rgba(16, 185, 129, 0.25);
+            transform: scale(1.1);
+        }
+        .btn-save:active {
+            transform: scale(0.95);
+        }
+
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 0.68rem;
+        }
+
+        tr.row-editing td {
+            background: rgba(37, 99, 235, 0.08) !important;
+        }
+
+        /* ===== MAIN ===== */
+        .main-container {
+            max-width: min(1900px, 97vw);
+            margin: 0 auto;
+            padding: 18px 20px 32px;
+        }
+
+        /* ===== ALERTS ===== */
+        .alert-section {
+            margin-bottom: 18px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            background: var(--bg-surface);
+            animation: fadeInUp 0.4s ease forwards;
+            transition: background 0.25s ease, border-color 0.25s ease;
+        }
+        .alert-section.is-clear {
+            border-color: #a7f3d0;
+            background: var(--success-bg);
+        }
+        .alert-section.has-warnings {
+            border-color: #fca5a5;
+            background: var(--danger-bg);
+        }
+        .alert-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+        .alert-header .alert-header-icon {
+            font-size: 0.95rem;
+        }
+        .is-clear .alert-header {
+            color: #065f46;
+        }
+        .has-warnings .alert-header {
+            color: #991b1b;
+        }
+        [data-theme="dark"] .is-clear .alert-header {
+            color: #6ee7b7;
+        }
+        [data-theme="dark"] .has-warnings .alert-header {
+            color: #fca5a5;
+        }
+        .alert-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 0 16px 12px;
+        }
+        .alert-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.74rem;
+            line-height: 1.4;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid var(--border-subtle);
+            transition: background 0.25s ease, border-color 0.25s ease;
+        }
+        [data-theme="dark"] .alert-item {
+            background: rgba(30, 41, 59, 0.6);
+        }
+        .alert-item.severity-overdue {
+            border-color: #fca5a5;
+            background: #fef2f2;
+        }
+        .alert-item.severity-notcollected {
+            border-color: #fca5a5;
+            background: #fef2f2;
+        }
+        .alert-item.severity-pending {
+            border-color: #fcd34d;
+            background: #fffbeb;
+        }
+        [data-theme="dark"] .alert-item.severity-overdue {
+            border-color: #991b1b;
+            background: #7f1d1d;
+        }
+        [data-theme="dark"] .alert-item.severity-notcollected {
+            border-color: #991b1b;
+            background: #7f1d1d;
+        }
+        [data-theme="dark"] .alert-item.severity-pending {
+            border-color: #78350f;
+            background: #78350f;
+        }
+        .alert-item .alert-icon {
+            flex-shrink: 0;
+            font-size: 0.85rem;
+        }
+        .alert-item strong {
+            color: var(--text-primary);
+        }
+        .alert-item .alert-tag {
+            display: inline-block;
+            margin-left: 5px;
+            padding: 1px 7px;
+            border-radius: 20px;
+            font-size: 0.56rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .severity-overdue .alert-tag,
+        .severity-notcollected .alert-tag {
+            background: #fecaca;
+            color: #991b1b;
+        }
+        .severity-pending .alert-tag {
+            background: #fde68a;
+            color: #92400e;
+        }
+        [data-theme="dark"] .severity-overdue .alert-tag,
+        [data-theme="dark"] .severity-notcollected .alert-tag {
+            background: #991b1b;
+            color: #fca5a5;
+        }
+        [data-theme="dark"] .severity-pending .alert-tag {
+            background: #78350f;
+            color: #fcd34d;
+        }
+
+        /* ===== KPI ===== */
+        .kpi-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .kpi-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 14px 18px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--border-medium);
+        }
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+        .kpi-card.flat1-accent::before {
+            background: linear-gradient(90deg, var(--flat1-primary), var(--flat1-accent));
+        }
+        .kpi-card.flat2-accent::before {
+            background: linear-gradient(90deg, var(--flat2-primary), var(--flat2-accent));
+        }
+        .kpi-card.total-accent::before {
+            background: linear-gradient(90deg, var(--success), #34d399);
+        }
+        .kpi-card.pending-accent::before {
+            background: linear-gradient(90deg, var(--warning), #fbbf24);
+        }
+
+        .kpi-icon {
+            position: absolute;
+            top: 12px;
+            right: 14px;
+            font-size: 0.95rem;
+            opacity: 0.2;
+        }
+        .kpi-label {
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+        .kpi-value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.03em;
+            font-variant-numeric: tabular-nums;
+            transition: color 0.25s ease;
+        }
+        .kpi-sub {
+            font-size: 0.62rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ===== FLATS GRID ===== */
+        .flats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 1200px) {
+            .flats-grid {
+                grid-template-columns: 1fr;
+            }
+            .kpi-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ===== SECTION CARDS ===== */
+        .section-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 18px;
+            margin-bottom: 0;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+            position: relative;
+            border-left: 5px solid transparent;
+        }
+        .section-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--border-medium);
+        }
+
+        #flat1-section {
+            background: var(--flat1-card-bg);
+            border-left-color: var(--flat1-primary);
+            border-top: 1px solid var(--flat1-border);
+        }
+        #flat1-section .section-title .title-icon {
+            background: var(--flat1-light);
+            color: var(--flat1-primary);
+            border: 1px solid var(--flat1-border);
+        }
+        #flat1-section .section-header {
+            border-bottom-color: var(--flat1-border);
+        }
+        #flat1-section .btn-primary {
+            background: var(--flat1-primary);
+        }
+        #flat1-section .btn-primary:hover {
+            background: var(--flat1-btn-hover);
+        }
+        #flat1-section .btn-edit {
+            color: var(--flat1-primary);
+        }
+        #flat1-section .btn-edit:hover {
+            background: var(--flat1-light);
+        }
+        #flat1-section .read-only-input {
+            color: var(--flat1-primary) !important;
+        }
+        #flat1-section .form-group {
+            background: var(--flat1-form-bg);
+            border-color: var(--flat1-form-border);
+        }
+        #flat1-section .form-group-title .form-dot {
+            background: var(--flat1-primary);
+        }
+        #flat1-section .form-row input:focus,
+        #flat1-section .form-row select:focus {
+            border-color: var(--flat1-primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+        #flat1-section thead th {
+            background: var(--flat1-table-header);
+            color: var(--flat1-primary);
+        }
+        #flat1-section td[contenteditable="true"]:focus {
+            background: var(--flat1-light) !important;
+            outline: 2px solid var(--flat1-primary);
+        }
+        #flat1-section input[type="checkbox"]:hover {
+            border-color: var(--flat1-primary);
+        }
+        #flat1-section .color-trigger:hover {
+            border-color: var(--flat1-primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        #flat2-section {
+            background: var(--flat2-card-bg);
+            border-left-color: var(--flat2-primary);
+            border-top: 1px solid var(--flat2-border);
+        }
+        #flat2-section .section-title .title-icon {
+            background: var(--flat2-light);
+            color: var(--flat2-primary);
+            border: 1px solid var(--flat2-border);
+        }
+        #flat2-section .section-header {
+            border-bottom-color: var(--flat2-border);
+        }
+        #flat2-section .btn-primary {
+            background: var(--flat2-primary);
+        }
+        #flat2-section .btn-primary:hover {
+            background: var(--flat2-btn-hover);
+        }
+        #flat2-section .btn-edit {
+            color: var(--flat2-primary);
+        }
+        #flat2-section .btn-edit:hover {
+            background: var(--flat2-light);
+        }
+        #flat2-section .read-only-input {
+            color: var(--flat2-primary) !important;
+        }
+        #flat2-section .form-group {
+            background: var(--flat2-form-bg);
+            border-color: var(--flat2-form-border);
+        }
+        #flat2-section .form-group-title .form-dot {
+            background: var(--flat2-primary);
+        }
+        #flat2-section .form-row input:focus,
+        #flat2-section .form-row select:focus {
+            border-color: var(--flat2-primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+        }
+        #flat2-section thead th {
+            background: var(--flat2-table-header);
+            color: var(--flat2-primary);
+        }
+        #flat2-section td[contenteditable="true"]:focus {
+            background: var(--flat2-light) !important;
+            outline: 2px solid var(--flat2-primary);
+        }
+        #flat2-section input[type="checkbox"]:hover {
+            border-color: var(--flat2-primary);
+        }
+        #flat2-section .color-trigger:hover {
+            border-color: var(--flat2-primary);
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+        }
+
+        /* ===== SECTION TITLE ===== */
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.02em;
+            transition: color 0.25s ease;
+        }
+        .section-title .title-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+        }
+
+        .section-header {
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-subtle);
+            transition: border-color 0.25s ease;
+        }
+
+        /* ===== TABLES (COMPACT) ===== */
+        .table-wrap {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            margin-bottom: 12px;
+            background: var(--bg-surface);
+            transition: background 0.25s ease, border-color 0.25s ease;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--td-font-size);
+            font-family: 'Inter', sans-serif;
+            table-layout: fixed;
+        }
+        #contracts-flat1,
+        #contracts-flat2 {
+            min-width: 320px;
+        }
+        #payments-flat1,
+        #payments-flat2 {
+            min-width: 480px;
+        }
+        thead th {
+            font-weight: 700;
+            font-size: var(--th-font-size);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: var(--th-padding);
+            text-align: center;
+            border-bottom: 2px solid var(--border-subtle);
+            white-space: nowrap;
+            transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+        }
+        tbody td {
+            padding: var(--td-padding);
+            text-align: center;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-subtle);
+            transition: background 0.15s ease, color 0.25s ease, border-color 0.25s ease;
+            font-variant-numeric: tabular-nums;
+            white-space: normal;
+            word-break: break-word;
+            font-size: var(--td-font-size);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.3;
+        }
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+        tbody tr:nth-child(even):not([class*="color-"]) td {
+            background: #fafcff;
+        }
+        [data-theme="dark"] tbody tr:nth-child(even):not([class*="color-"]) td {
+            background: #162135;
+        }
+        tbody tr:hover td {
+            background: var(--bg-hover);
+        }
+        .rent-period-cell {
+            white-space: nowrap;
+            font-weight: 500;
+            font-size: var(--td-font-size);
+        }
+
+        td.remarks-cell {
+            cursor: default;
+            font-size: var(--td-font-size);
+            font-family: 'Inter', sans-serif;
+            padding: var(--td-padding);
+            text-align: center;
+            vertical-align: middle;
+            word-break: break-word;
+        }
+        td.remarks-cell[contenteditable="true"] {
+            cursor: text;
+            border-radius: var(--radius-sm);
+            background: rgba(241, 245, 249, 0.5);
+            transition: background 0.2s;
+        }
+        td.remarks-cell[contenteditable="true"]:hover {
+            background: rgba(226, 232, 240, 0.6);
+        }
+
+        input[type="checkbox"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            border: 2px solid var(--border-medium);
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            flex-shrink: 0;
+            touch-action: manipulation;
+        }
+        [data-theme="dark"] input[type="checkbox"] {
+            background: var(--bg-input);
+        }
+        input[type="checkbox"]:checked {
+            background: var(--success);
+            border-color: var(--success);
+        }
+        input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        /* Row colors */
+        .color-yellow {
+            background: var(--warning-bg) !important;
+        }
+        .color-yellow td {
+            color: #92400e !important;
+        }
+        [data-theme="dark"] .color-yellow td {
+            color: var(--color-yellow-text) !important;
+        }
+        .color-green {
+            background: var(--success-bg) !important;
+        }
+        .color-green td {
+            color: #065f46 !important;
+        }
+        [data-theme="dark"] .color-green td {
+            color: var(--color-green-text) !important;
+        }
+        .color-magenta {
+            background: #fdf2f8 !important;
+        }
+        .color-magenta td {
+            color: #9d174d !important;
+        }
+        [data-theme="dark"] .color-magenta td {
+            color: var(--color-magenta-text) !important;
+        }
+        .color-blue {
+            background: var(--info-bg) !important;
+        }
+        .color-blue td {
+            color: #1e40af !important;
+        }
+        [data-theme="dark"] .color-blue td {
+            color: var(--color-blue-text) !important;
+        }
+        .color-orange {
+            background: #fff7ed !important;
+        }
+        .color-orange td {
+            color: #9a3412 !important;
+        }
+        [data-theme="dark"] .color-orange td {
+            color: var(--color-orange-text) !important;
+        }
+
+        /* ===== COLOR PICKER ===== */
+        .color-picker-container {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .color-trigger {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--border-medium);
+            cursor: pointer;
+            background: #f1f5f9;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.5rem;
+            transition: all 0.2s ease;
+            touch-action: manipulation;
+            flex-shrink: 0;
+        }
+        [data-theme="dark"] .color-trigger {
+            background: #2d3748;
+        }
+        .color-palette-popover {
+            display: none;
+            position: absolute;
+            top: 26px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            padding: 4px;
+            gap: 4px;
+            z-index: 100;
+            flex-wrap: wrap;
+            width: 84px;
+            justify-content: center;
+        }
+        .color-palette-popover.active {
+            display: flex;
+            animation: fadeInUp 0.15s ease;
+        }
+        .color-opt {
+            width: 17px;
+            height: 17px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.15s ease;
+            touch-action: manipulation;
+            flex-shrink: 0;
+        }
+        .color-opt:hover {
+            transform: scale(1.3);
+            border-color: var(--text-primary);
+        }
+        .opt-none {
+            background: #e2e8f0;
+            border-color: var(--border-medium);
+        }
+        .opt-green {
+            background: #34d399;
+        }
+        .opt-magenta {
+            background: #f472b6;
+        }
+        .opt-blue {
+            background: #60a5fa;
+        }
+        .opt-orange {
+            background: #fb923c;
+        }
+        [data-theme="dark"] .opt-none {
+            background: #475569;
+        }
+
+        /* ===== FORMS ===== */
+        .form-group {
+            margin-top: 10px;
+            padding: 12px 14px;
+            border: 1px dashed var(--border-medium);
+            border-radius: var(--radius-md);
+            position: relative;
+            background: #fafcff;
+            transition: background 0.25s ease, border-color 0.25s ease;
+        }
+        [data-theme="dark"] .form-group {
+            background: var(--bg-surface);
+        }
+
+        .form-group-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.25s ease;
+        }
+        .form-group-title .form-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--flat1-primary);
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: flex-end;
+        }
+        .form-row label {
+            font-size: 0.62rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            flex: 1;
+            min-width: 100px;
+            transition: color 0.25s ease;
+        }
+        .form-field-wide {
+            flex: 2;
+            min-width: 180px;
+        }
+        .form-row input,
+        .form-row select {
+            padding: 5px 8px;
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 500;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            outline: none;
+            transition: all 0.2s ease;
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+        }
+        .form-row input::placeholder {
+            color: var(--text-light);
+            font-size: 0.62rem;
+        }
+        .read-only-input {
+            background: #f1f5f9 !important;
+            font-weight: 700;
+            color: var(--flat1-primary) !important;
+        }
+        [data-theme="dark"] .read-only-input {
+            background: #2d3748 !important;
+        }
+        select option {
+            background: #fff;
+            color: var(--text-primary);
+        }
+        [data-theme="dark"] select option {
+            background: var(--bg-surface);
+            color: var(--text-primary);
+        }
+
+        /* ===== FOOTER ===== */
+        .app-footer {
+            text-align: center;
+            padding: 18px;
+            padding-bottom: calc(18px + env(safe-area-inset-bottom));
+            color: var(--text-muted);
+            font-size: 0.65rem;
+            margin-top: 16px;
+            border-top: 1px solid var(--border-subtle);
+            background: var(--bg-surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .kpi-card,
+        .section-card {
+            animation: fadeInUp 0.4s ease forwards;
+        }
+        .kpi-card:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+        .kpi-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+        .kpi-card:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+        .kpi-card:nth-child(4) {
+            animation-delay: 0.2s;
+        }
+
+        /* ===== QUICK JUMP FAB ===== */
+        .quick-jump-fab {
+            display: none;
+        }
+        @media (max-width: 1200px) {
+            .quick-jump-fab {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                position: fixed;
+                right: 12px;
+                bottom: calc(12px + env(safe-area-inset-bottom));
+                z-index: 150;
+            }
+            .fab-btn {
+                width: 46px;
+                height: 46px;
+                border-radius: 50%;
+                border: none;
+                cursor: pointer;
+                color: #fff;
+                font-size: 0.55rem;
+                font-weight: 800;
+                font-family: 'Inter', sans-serif;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 0px;
+                box-shadow: var(--shadow-lg);
+                touch-action: manipulation;
+                line-height: 1;
+            }
+            .fab-btn span {
+                font-size: 0.7rem;
+                margin-top: 0px;
+            }
+            .fab-flat1 {
+                background: linear-gradient(135deg, var(--flat1-primary), var(--flat1-accent));
+            }
+            .fab-flat2 {
+                background: linear-gradient(135deg, var(--flat2-primary), var(--flat2-accent));
+            }
+            .fab-btn:active {
+                transform: scale(0.92);
+            }
+        }
+
+        /* ============================================================
+           COMPACT COLUMN WIDTHS – Equal spacing for Original, Deduction, Received
+           ============================================================ */
+        #payments-flat1 thead th,
+        #payments-flat2 thead th {
+            padding: var(--th-padding);
+            font-size: var(--th-font-size);
+        }
+        #payments-flat1 thead th:nth-child(1),
+        #payments-flat2 thead th:nth-child(1) {
+            width: 12%;
+        }
+        #payments-flat1 thead th:nth-child(2),
+        #payments-flat2 thead th:nth-child(2) {
+            width: 8%;
+        }
+        #payments-flat1 thead th:nth-child(3),
+        #payments-flat2 thead th:nth-child(3) {
+            width: 8%;
+        }
+        #payments-flat1 thead th:nth-child(4),
+        #payments-flat2 thead th:nth-child(4) {
+            width: 9%;
+        }
+        #payments-flat1 thead th:nth-child(5),
+        #payments-flat2 thead th:nth-child(5) {
+            width: 41%;
+        }
+        #payments-flat1 thead th:nth-child(6),
+        #payments-flat2 thead th:nth-child(6) {
+            width: 5%;
+        }
+        #payments-flat1 thead th:nth-child(7),
+        #payments-flat2 thead th:nth-child(7) {
+            width: 5%;
+        }
+        #payments-flat1 thead th:nth-child(8),
+        #payments-flat2 thead th:nth-child(8) {
+            width: 4%;
+        }
+        #payments-flat1 thead th:nth-child(9),
+        #payments-flat2 thead th:nth-child(9) {
+            width: 4%;
+        }
+
+        /* Center the headers for Original, Deduction, Received */
+        #payments-flat1 thead th:nth-child(2),
+        #payments-flat2 thead th:nth-child(2),
+        #payments-flat1 thead th:nth-child(3),
+        #payments-flat2 thead th:nth-child(3),
+        #payments-flat1 thead th:nth-child(4),
+        #payments-flat2 thead th:nth-child(4) {
+            text-align: center;
+        }
+
+        /* Center-align numeric cells – no extra padding */
+        #payments-flat1 tbody td:nth-child(2),
+        #payments-flat2 tbody td:nth-child(2),
+        #payments-flat1 tbody td:nth-child(3),
+        #payments-flat2 tbody td:nth-child(3),
+        #payments-flat1 tbody td:nth-child(4),
+        #payments-flat2 tbody td:nth-child(4) {
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Contract table columns */
+        #contracts-flat1 thead th:nth-child(1),
+        #contracts-flat2 thead th:nth-child(1) {
+            width: 16%;
+        }
+        #contracts-flat1 thead th:nth-child(2),
+        #contracts-flat2 thead th:nth-child(2) {
+            width: 16%;
+        }
+        #contracts-flat1 thead th:nth-child(3),
+        #contracts-flat2 thead th:nth-child(3) {
+            width: 16%;
+        }
+        #contracts-flat1 thead th:nth-child(4),
+        #contracts-flat2 thead th:nth-child(4) {
+            width: 20%;
+        }
+        #contracts-flat1 thead th:nth-child(5),
+        #contracts-flat2 thead th:nth-child(5) {
+            width: 32%;
+        }
+
+        @media (max-width: 640px) {
+            #payments-flat1 thead th,
+            #payments-flat2 thead th,
+            #contracts-flat1 thead th,
+            #contracts-flat2 thead th {
+                width: auto !important;
+            }
+        }
+
+        /* ============================================================
+           MOBILE PORTRAIT (<=640px) – keep the same compactness
+           ============================================================ */
+        @media (max-width: 640px) {
+            .kpi-section {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+            .kpi-card {
+                padding: 10px 14px;
+            }
+            .kpi-value {
+                font-size: 1.15rem;
+            }
+            .main-container {
+                padding: 8px 8px 20px;
+            }
+            .topbar {
+                padding: 8px 12px;
+                padding-top: calc(8px + env(safe-area-inset-top));
+                gap: 6px;
+            }
+            .topbar-brand h1 {
+                font-size: 0.85rem;
+            }
+            .topbar-brand .logo-icon {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
+            .topbar-tagline {
+                font-size: 0.5rem;
+            }
+            .topbar-actions {
+                width: 100%;
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 4px;
+            }
+            .topbar-actions .btn {
+                justify-content: center;
+                padding: 4px 4px;
+                font-size: 0.58rem;
+                white-space: normal;
+                text-align: center;
+                line-height: 1.2;
+            }
+            .topbar-actions .theme-toggle {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+                justify-self: center;
+            }
+            .topbar-actions .btn:nth-child(6) {
+                grid-column: 1 / -1;
+            }
+            .section-card {
+                padding: 8px;
+                margin-bottom: 0;
+                border-left-width: 4px;
+            }
+            .section-header {
+                margin-bottom: 6px;
+                padding-bottom: 6px;
+            }
+            .section-title {
+                font-size: 0.95rem;
+            }
+            .section-title .title-icon {
+                width: 26px;
+                height: 26px;
+                font-size: 0.7rem;
+            }
+
+            .form-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 5px;
+            }
+            .form-row label {
+                min-width: 0;
+                width: 100%;
+                font-size: 0.58rem;
+                gap: 2px;
+            }
+            .form-row input,
+            .form-row select {
+                padding: 4px 6px;
+                font-size: 12px;
+            }
+            .form-field-wide {
+                flex: none;
+                width: 100%;
+                min-width: 0;
+            }
+            .form-group {
+                padding: 8px;
+                margin-top: 8px;
+            }
+            .form-group-title {
+                font-size: 0.68rem;
+                margin-bottom: 5px;
+            }
+
+            #contract-form-flat1 .form-row,
+            #contract-form-flat2 .form-row {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 4px;
+            }
+            #contract-form-flat1 .form-row label,
+            #contract-form-flat2 .form-row label {
+                min-width: 0;
+                width: auto;
+                font-size: 0.52rem;
+                gap: 1px;
+            }
+            #contract-form-flat1 .form-row label:has(#c1-remarks),
+            #contract-form-flat2 .form-row label:has(#c2-remarks) {
+                grid-column: 2 / 4;
+            }
+            #contract-form-flat1 .form-row input,
+            #contract-form-flat1 .form-row select,
+            #contract-form-flat2 .form-row input,
+            #contract-form-flat2 .form-row select {
+                padding: 3px 5px;
+                font-size: 11px;
+            }
+
+            #payment-form-flat1,
+            #payment-form-flat2 {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 4px;
+                align-items: end;
+            }
+            #payment-form-flat1 .form-row,
+            #payment-form-flat2 .form-row {
+                display: contents;
+            }
+            #payment-form-flat1 .form-group-title,
+            #payment-form-flat2 .form-group-title {
+                grid-column: 1 / -1;
+                margin-bottom: 1px;
+            }
+            #payment-form-flat1 .form-row label,
+            #payment-form-flat2 .form-row label {
+                min-width: 0;
+                width: auto;
+                font-size: 0.5rem;
+                gap: 1px;
+            }
+            #payment-form-flat1 .form-row input,
+            #payment-form-flat1 .form-row select,
+            #payment-form-flat2 .form-row input,
+            #payment-form-flat2 .form-row select {
+                padding: 3px 5px;
+                font-size: 11px;
+            }
+            #payment-form-flat1 .form-row input::placeholder,
+            #payment-form-flat2 .form-row input::placeholder {
+                font-size: 0.6rem;
+            }
+            #payment-form-flat1 label:has(#p1-start),
+            #payment-form-flat2 label:has(#p2-start) {
+                order: 1;
+            }
+            #payment-form-flat1 label:has(#p1-end),
+            #payment-form-flat2 label:has(#p2-end) {
+                order: 2;
+            }
+            #payment-form-flat1 label:has(#p1-color),
+            #payment-form-flat2 label:has(#p2-color) {
+                order: 3;
+            }
+            #payment-form-flat1 label:has(#p1-original),
+            #payment-form-flat2 label:has(#p2-original) {
+                order: 4;
+            }
+            #payment-form-flat1 label:has(#p1-deduction),
+            #payment-form-flat2 label:has(#p2-deduction) {
+                order: 5;
+            }
+            #payment-form-flat1 label:has(#p1-received),
+            #payment-form-flat2 label:has(#p2-received) {
+                order: 6;
+            }
+            #payment-form-flat1 label:has(#p1-remarks),
+            #payment-form-flat2 label:has(#p2-remarks) {
+                order: 7;
+                grid-column: 1 / -1;
+            }
+            #payment-form-flat1>button,
+            #payment-form-flat2>button {
+                order: 99;
+                grid-column: 1 / -1;
+                padding: 4px 8px;
+                font-size: 0.6rem;
+            }
+
+            #contracts-flat1,
+            #contracts-flat2,
+            #payments-flat1,
+            #payments-flat2 {
+                min-width: 0;
+                width: 100%;
+            }
+            .table-wrap {
+                overflow-x: visible;
+                box-shadow: none;
+                border: none;
+                margin-bottom: 6px;
+            }
+            table,
+            tbody {
+                display: block;
+                width: 100%;
+            }
+            thead {
+                display: none;
+            }
+            tbody tr {
+                display: flex;
+                flex-wrap: wrap;
+                background: #fafcff;
+                border: 1px solid var(--border-subtle);
+                border-radius: var(--radius-md);
+                margin-bottom: 5px;
+                padding: 1px 8px;
+                gap: 0 6px;
+            }
+            [data-theme="dark"] tbody tr {
+                background: var(--bg-surface);
+            }
+            tbody tr:last-child {
+                margin-bottom: 0;
+            }
+            tbody td {
+                display: flex;
+                flex: 1 0 100%;
+                justify-content: space-between;
+                align-items: center;
+                gap: 6px;
+                padding: 3px 0;
+                border-bottom: 1px dashed var(--border-subtle);
+                text-align: right;
+                white-space: normal;
+                font-size: 0.62rem;
+            }
+            tbody tr td:last-child {
+                border-bottom: none;
+            }
+            tbody td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                font-size: 0.45rem;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                color: var(--text-muted);
+                text-align: left;
+                flex-shrink: 0;
+                white-space: nowrap;
+            }
+            .rent-period-cell {
+                white-space: normal;
+            }
+
+            td.remarks-cell {
+                font-size: 0.62rem;
+                padding: 3px 0;
+                text-align: right;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px dashed var(--border-subtle);
+                width: 100%;
+                cursor: default;
+            }
+            td.remarks-cell[contenteditable="true"] {
+                background: transparent;
+                cursor: text;
+            }
+            td.remarks-cell[contenteditable="true"]:hover {
+                background: transparent;
+            }
+            td.remarks-cell[contenteditable="true"]:focus {
+                background: var(--flat1-light) !important;
+                outline: 2px solid var(--flat1-primary);
+                outline-offset: -2px;
+                border-radius: var(--radius-sm);
+            }
+            #flat2-section td.remarks-cell[contenteditable="true"]:focus {
+                background: var(--flat2-light) !important;
+                outline: 2px solid var(--flat2-primary);
+            }
+
+            #payments-flat1 tbody tr,
+            #payments-flat2 tbody tr {
+                display: grid;
+                grid-template-columns: 1.6fr 0.9fr 0.9fr 0.9fr;
+                gap: 2px 4px;
+            }
+            #payments-flat1 tbody td,
+            #payments-flat2 tbody td {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1px;
+                text-align: left;
+                border-bottom: none;
+                padding: 4px 0 2px;
+                min-width: 0;
+                overflow-wrap: break-word;
+                font-size: 0.6rem;
+            }
+            #payments-flat1 tbody td:nth-child(1),
+            #payments-flat2 tbody td:nth-child(1) {
+                grid-column: 1;
+                grid-row: 1;
+                white-space: nowrap;
+            }
+            #payments-flat1 tbody td:nth-child(2),
+            #payments-flat2 tbody td:nth-child(2) {
+                grid-column: 2;
+                grid-row: 1;
+            }
+            #payments-flat1 tbody td:nth-child(3),
+            #payments-flat2 tbody td:nth-child(3) {
+                grid-column: 3;
+                grid-row: 1;
+            }
+            #payments-flat1 tbody td:nth-child(4),
+            #payments-flat2 tbody td:nth-child(4) {
+                grid-column: 4;
+                grid-row: 1;
+            }
+            #payments-flat1 tbody td:nth-child(1)::before,
+            #payments-flat2 tbody td:nth-child(1)::before {
+                content: 'Period';
+            }
+            #payments-flat1 tbody td:nth-child(3)::before,
+            #payments-flat2 tbody td:nth-child(3)::before {
+                content: 'Deducted';
+            }
+            #payments-flat1 tbody td:nth-child(4)::before,
+            #payments-flat2 tbody td:nth-child(4)::before {
+                content: 'Final';
+            }
+            #payments-flat1 tbody td:nth-child(5),
+            #payments-flat2 tbody td:nth-child(5) {
+                grid-column: 1 / -1;
+                grid-row: 2;
+                border-top: 1px dashed var(--border-subtle);
+                margin-top: 1px;
+                padding-top: 4px;
+            }
+            #payments-flat1 tbody td:nth-child(6),
+            #payments-flat2 tbody td:nth-child(6),
+            #payments-flat1 tbody td:nth-child(7),
+            #payments-flat2 tbody td:nth-child(7),
+            #payments-flat1 tbody td:nth-child(8),
+            #payments-flat2 tbody td:nth-child(8),
+            #payments-flat1 tbody td:nth-child(9),
+            #payments-flat2 tbody td:nth-child(9) {
+                grid-row: 3;
+                flex-direction: row;
+                align-items: center;
+                justify-content: center;
+                gap: 2px;
+                border-top: 1px dashed var(--border-subtle);
+                margin-top: 1px;
+                padding: 4px 0 2px;
+            }
+            #payments-flat1 tbody td:nth-child(6),
+            #payments-flat2 tbody td:nth-child(6) {
+                grid-column: 1;
+                justify-content: flex-start;
+            }
+            #payments-flat1 tbody td:nth-child(7),
+            #payments-flat2 tbody td:nth-child(7) {
+                grid-column: 2;
+            }
+            #payments-flat1 tbody td:nth-child(8),
+            #payments-flat2 tbody td:nth-child(8) {
+                grid-column: 3;
+            }
+            #payments-flat1 tbody td:nth-child(9),
+            #payments-flat2 tbody td:nth-child(9) {
+                grid-column: 4;
+            }
+            #payments-flat1 tbody td:nth-child(6)::before,
+            #payments-flat2 tbody td:nth-child(6)::before {
+                font-size: 0.45rem;
+            }
+            #payments-flat1 tbody td:nth-child(7)::before,
+            #payments-flat2 tbody td:nth-child(7)::before,
+            #payments-flat1 tbody td:nth-child(8)::before,
+            #payments-flat2 tbody td:nth-child(8)::before,
+            #payments-flat1 tbody td:nth-child(9)::before,
+            #payments-flat2 tbody td:nth-child(9)::before {
+                content: none;
+            }
+            #payments-flat1 tbody td:nth-child(6) input[type="checkbox"],
+            #payments-flat2 tbody td:nth-child(6) input[type="checkbox"] {
+                width: 12px;
+                height: 12px;
+                margin: 0;
+            }
+            #payments-flat1 tbody td:nth-child(7) .color-trigger,
+            #payments-flat2 tbody td:nth-child(7) .color-trigger {
+                width: 17px;
+                height: 17px;
+                font-size: 0.45rem;
+            }
+            #payments-flat1 tbody td:nth-child(8) .btn,
+            #payments-flat2 tbody td:nth-child(8) .btn,
+            #payments-flat1 tbody td:nth-child(9) .btn,
+            #payments-flat2 tbody td:nth-child(9) .btn {
+                padding: 2px;
+                width: 20px;
+                height: 20px;
+                font-size: 0.5rem;
+                min-width: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            #contracts-flat1 tbody tr,
+            #contracts-flat2 tbody tr {
+                display: grid;
+                grid-template-columns: 0.5fr 0.4fr 0.9fr 0.9fr;
+                gap: 2px 4px;
+            }
+            #contracts-flat1 tbody td,
+            #contracts-flat2 tbody td {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1px;
+                text-align: left;
+                border-bottom: none;
+                padding: 4px 0 2px;
+                min-width: 0;
+                overflow-wrap: break-word;
+                font-size: 0.6rem;
+            }
+            #contracts-flat1 tbody td:nth-child(1),
+            #contracts-flat2 tbody td:nth-child(1) {
+                grid-column: 1;
+                grid-row: 1;
+                white-space: nowrap;
+            }
+            #contracts-flat1 tbody td:nth-child(1)::before,
+            #contracts-flat2 tbody td:nth-child(1)::before {
+                content: 'From';
+            }
+            #contracts-flat1 tbody td:nth-child(2),
+            #contracts-flat2 tbody td:nth-child(2) {
+                grid-column: 2;
+                grid-row: 1;
+                white-space: nowrap;
+            }
+            #contracts-flat1 tbody td:nth-child(2)::before,
+            #contracts-flat2 tbody td:nth-child(2)::before {
+                content: '→';
+                font-size: 0.6rem;
+                color: var(--text-muted);
+                text-transform: none;
+                letter-spacing: 0;
+            }
+            #contracts-flat1 tbody td:nth-child(3),
+            #contracts-flat2 tbody td:nth-child(3) {
+                grid-column: 3;
+                grid-row: 1;
+            }
+            #contracts-flat1 tbody td:nth-child(3)::before,
+            #contracts-flat2 tbody td:nth-child(3)::before {
+                content: 'Rent';
+            }
+            #contracts-flat1 tbody td:nth-child(4),
+            #contracts-flat2 tbody td:nth-child(4) {
+                grid-column: 4;
+                grid-row: 1;
+            }
+            #contracts-flat1 tbody td:nth-child(4)::before,
+            #contracts-flat2 tbody td:nth-child(4)::before {
+                content: 'Freq';
+            }
+            #contracts-flat1 tbody td:nth-child(5),
+            #contracts-flat2 tbody td:nth-child(5) {
+                grid-column: 1 / -1;
+                grid-row: 2;
+                border-top: 1px dashed var(--border-subtle);
+                margin-top: 1px;
+                padding: 4px 0 2px;
+            }
+            #contracts-flat1 tbody td:nth-child(5)::before,
+            #contracts-flat2 tbody td:nth-child(5)::before {
+                content: 'Remarks';
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== TOPBAR ===== -->
+    <nav class="topbar">
+        <div class="topbar-brand">
+            <div class="logo-icon">🏢</div>
+            <div>
+                <h1>Flat Rent Tracker Pro</h1>
+                <div class="topbar-tagline">Rental income &amp; collections dashboard</div>
+                <div class="topbar-tagline" id="syncStatusLine" style="margin-top:2px;"></div>
+            </div>
+        </div>
+        <div class="topbar-actions">
+            <button class="btn btn-success" onclick="exportToExcelFormatted()"><span>📊</span> Export</button>
+            <button class="btn btn-primary" onclick="saveTrackerData()"><span>💾</span> Save</button>
+            <button class="btn btn-outline" onclick="exportDataAsJSON()"><span>⬇️</span> Backup</button>
+            <button class="btn btn-outline" onclick="triggerImportData()"><span>⬆️</span> Restore</button>
+            <button class="btn btn-outline" onclick="openSyncSettings()" id="cloudSyncBtn"><span>☁️</span> <span id="cloudSyncBtnLabel">Cloud Sync</span></button>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle night mode" id="themeToggleBtn">🌙</button>
+            <input type="file" id="importFileInput" accept="application/json" style="display:none;" onchange="importDataFromJSON(event)" />
+        </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main-container">
+
+        <!-- ALERTS -->
+        <div class="alert-section is-clear" id="dueAlertsSection">
+            <div class="alert-header"><span class="alert-header-icon">✅</span><span id="alertHeaderText">Checking rent status…</span></div>
+            <div class="alert-list" id="alertList"></div>
+        </div>
+
+        <!-- KPI -->
+        <div class="kpi-section">
+            <div class="kpi-card flat1-accent">
+                <span class="kpi-icon">🔑</span>
+                <div class="kpi-label">Flat 1 — Ahmad · Collected</div>
+                <div class="kpi-value" id="kpi-flat1-collected">—</div>
+                <div class="kpi-sub">All periods</div>
+            </div>
+            <div class="kpi-card flat2-accent">
+                <span class="kpi-icon">🔑</span>
+                <div class="kpi-label">Flat 2 — Lamlom · Collected</div>
+                <div class="kpi-value" id="kpi-flat2-collected">—</div>
+                <div class="kpi-sub">All periods</div>
+            </div>
+            <div class="kpi-card total-accent">
+                <span class="kpi-icon">💰</span>
+                <div class="kpi-label">Combined Total Collected</div>
+                <div class="kpi-value" id="kpi-total-collected">—</div>
+                <div class="kpi-sub">Both flats</div>
+            </div>
+            <div class="kpi-card pending-accent">
+                <span class="kpi-icon">⏳</span>
+                <div class="kpi-label">Pending (not sent to bank)</div>
+                <div class="kpi-value" id="kpi-pending">—</div>
+                <div class="kpi-sub">Awaiting transfer</div>
+            </div>
+        </div>
+
+        <!-- FLATS GRID -->
+        <div class="flats-grid">
+
+            <!-- FLAT 1 -->
+            <div class="section-card" id="flat1-section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="title-icon flat1-icon">🔑</span>
+                        Flat 1 — Ahmad
+                    </div>
+                </div>
+
+                <h3 style="font-size:0.72rem; color:var(--text-secondary); font-weight:600; margin-bottom:6px;">📋 Contract Periods</h3>
+                <div class="table-wrap">
+                    <table id="contracts-flat1">
+                        <thead><tr><th>From</th><th>To</th><th>Monthly Rent</th><th>Frequency</th><th>Remarks</th></tr></thead>
+                        <tbody>
+                            <tr><td>Jan-23</td><td>Dec-23</td><td>5500</td><td>Every 3 Months</td><td></td></tr>
+                            <tr><td>Jan-24</td><td>Dec-24</td><td>6000</td><td>Every 3 Months</td><td></td></tr>
+                            <tr><td>Jan-25</td><td>Dec-25</td><td>6000</td><td>Every 3 Months</td><td></td></tr>
+                            <tr><td>Jan-26</td><td>Dec-26</td><td>9000</td><td>Every 3 Months</td><td></td></tr>
+                            <tr><td>Jan-27</td><td>Dec-27</td><td>10000</td><td>Every 3 Months</td><td></td></tr>
+                            <tr><td>Jan-28</td><td>Dec-28</td><td>11000</td><td>Every 3 Months</td><td></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="form-group" id="contract-form-flat1">
+                    <div class="form-group-title"><span class="form-dot"></span>Add / Update Contract</div>
+                    <div class="form-row">
+                        <label>From<input type="month" id="c1-from" min="2020-01" max="2100-12" /></label>
+                        <label>To<input type="month" id="c1-to" min="2020-01" max="2100-12" /></label>
+                        <label>Monthly Rent<input type="number" id="c1-rent" placeholder="Amount" /></label>
+                        <label>Payment Frequency
+                            <select id="c1-frequency">
+                                <option value="1">Every 1 Month</option>
+                                <option value="2">Every 2 Months</option>
+                                <option value="3" selected>Every 3 Months</option>
+                            </select>
+                        </label>
+                        <label>Remarks<input type="text" id="c1-remarks" placeholder="Remarks" /></label>
+                    </div>
+                    <button class="btn btn-primary btn-sm" style="margin-top:8px;" onclick="addContract('flat1')">Add / Update Contract</button>
+                </div>
+
+                <div class="form-group" id="payment-form-flat1">
+                    <div class="form-group-title"><span class="form-dot"></span>Add / Update Rent Payment — Flat Ahmad</div>
+                    <div class="form-row" style="margin-bottom:4px;">
+                        <label>Start Month<input type="month" id="p1-start" min="2020-01" max="2100-12" onchange="calculateRentForm('flat1')" /></label>
+                        <label>End Month<input type="month" id="p1-end" min="2020-01" max="2100-12" onchange="calculateRentForm('flat1')" /></label>
+                        <label>Original Amount<input type="number" id="p1-original" placeholder="Auto" readonly class="read-only-input" /></label>
+                        <label>Deduction Amount<input type="number" id="p1-deduction" value="0" oninput="calculateRentForm('flat1')" /></label>
+                        <label>Received Amount (Final)<input type="number" id="p1-received" placeholder="Auto" readonly class="read-only-input" /></label>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-field-wide">Deductions / Remarks<input type="text" id="p1-remarks" placeholder="Add remarks or balance details here" style="width:100%;" /></label>
+                        <label>Highlight
+                            <select id="p1-color">
+                                <option value="">None</option>
+                                <option value="color-green">Green (Deductions)</option>
+                                <option value="color-magenta">Magenta (Special)</option>
+                                <option value="color-blue">Blue Highlight</option>
+                                <option value="color-orange">Orange Highlight</option>
+                            </select>
+                        </label>
+                    </div>
+                    <button class="btn btn-primary btn-sm" style="margin-top:8px;" onclick="addPayment('flat1')">Add / Update Payment</button>
+                </div>
+
+                <h3 style="font-size:0.72rem; color:var(--text-secondary); font-weight:600; margin:12px 0 6px;">📅 Rent Period Receipts</h3>
+                <div class="table-wrap">
+                    <table id="payments-flat1">
+                        <thead>
+                            <tr>
+                                <th>Rent Period</th>
+                                <th>Original</th>
+                                <th>Deduction</th>
+                                <th>Received</th>
+                                <th>Remarks</th>
+                                <th>Bank</th>
+                                <th>Color</th>
+                                <th>Del</th>
+                                <th>Edit</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- FLAT 2 -->
+            <div class="section-card" id="flat2-section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="title-icon flat2-icon">🔑</span>
+                        Flat 2 — Lamlom
+                    </div>
+                </div>
+
+                <h3 style="font-size:0.72rem; color:var(--text-secondary); font-weight:600; margin-bottom:6px;">📋 Contract Periods</h3>
+                <div class="table-wrap">
+                    <table id="contracts-flat2">
+                        <thead><tr><th>From</th><th>To</th><th>Monthly Rent</th><th>Frequency</th><th>Remarks</th></tr></thead>
+                        <tbody>
+                            <tr><td>Jan-23</td><td>Dec-25</td><td>7000</td><td>Every 3 Months</td><td></td></tr>
+                            <tr><td>Jan-26</td><td>Dec-26</td><td>10000</td><td>Every 3 Months</td><td></td></tr>
+                            <tr><td>Jan-27</td><td>Dec-27</td><td>11000</td><td>Every 3 Months</td><td></td></tr>
+                            <tr><td>Jan-28</td><td>Dec-28</td><td>12000</td><td>Every 3 Months</td><td></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="form-group" id="contract-form-flat2">
+                    <div class="form-group-title"><span class="form-dot"></span>Add / Update Contract</div>
+                    <div class="form-row">
+                        <label>From<input type="month" id="c2-from" min="2020-01" max="2100-12" /></label>
+                        <label>To<input type="month" id="c2-to" min="2020-01" max="2100-12" /></label>
+                        <label>Monthly Rent<input type="number" id="c2-rent" placeholder="Amount" /></label>
+                        <label>Payment Frequency
+                            <select id="c2-frequency">
+                                <option value="1">Every 1 Month</option>
+                                <option value="2">Every 2 Months</option>
+                                <option value="3" selected>Every 3 Months</option>
+                            </select>
+                        </label>
+                        <label>Remarks<input type="text" id="c2-remarks" placeholder="Remarks" /></label>
+                    </div>
+                    <button class="btn btn-primary btn-sm" style="margin-top:8px;" onclick="addContract('flat2')">Add / Update Contract</button>
+                </div>
+
+                <div class="form-group" id="payment-form-flat2">
+                    <div class="form-group-title"><span class="form-dot"></span>Add / Update Rent Payment — Flat Lamlom</div>
+                    <div class="form-row" style="margin-bottom:4px;">
+                        <label>Start Month<input type="month" id="p2-start" min="2020-01" max="2100-12" onchange="calculateRentForm('flat2')" /></label>
+                        <label>End Month<input type="month" id="p2-end" min="2020-01" max="2100-12" onchange="calculateRentForm('flat2')" /></label>
+                        <label>Original Amount<input type="number" id="p2-original" placeholder="Auto" readonly class="read-only-input" /></label>
+                        <label>Deduction Amount<input type="number" id="p2-deduction" value="0" oninput="calculateRentForm('flat2')" /></label>
+                        <label>Received Amount (Final)<input type="number" id="p2-received" placeholder="Auto" readonly class="read-only-input" /></label>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-field-wide">Deductions / Remarks<input type="text" id="p2-remarks" placeholder="Add remarks or balance details here" style="width:100%;" /></label>
+                        <label>Highlight
+                            <select id="p2-color">
+                                <option value="">None</option>
+                                <option value="color-green">Green (Deductions)</option>
+                                <option value="color-magenta">Magenta (Special)</option>
+                                <option value="color-blue">Blue Highlight</option>
+                                <option value="color-orange">Orange Highlight</option>
+                            </select>
+                        </label>
+                    </div>
+                    <button class="btn btn-primary btn-sm" style="margin-top:8px;" onclick="addPayment('flat2')">Add / Update Payment</button>
+                </div>
+
+                <h3 style="font-size:0.72rem; color:var(--text-secondary); font-weight:600; margin:12px 0 6px;">📅 Rent Period Receipts</h3>
+                <div class="table-wrap">
+                    <table id="payments-flat2">
+                        <thead>
+                            <tr>
+                                <th>Rent Period</th>
+                                <th>Original</th>
+                                <th>Deduction</th>
+                                <th>Received</th>
+                                <th>Remarks</th>
+                                <th>Bank</th>
+                                <th>Color</th>
+                                <th>Del</th>
+                                <th>Edit</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="app-footer">
+            Flat Rent Tracker Pro &mdash; All data is stored locally in your browser via LocalStorage.
+        </div>
+    </div>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        // --- Theme ---
+        function getPreferredTheme() {
+            const stored = localStorage.getItem('rentTrackerTheme');
+            if (stored) return stored;
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('rentTrackerTheme', theme);
+            const btn = document.getElementById('themeToggleBtn');
+            if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+            // Update meta theme-color
+            const meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) {
+                meta.content = theme === 'dark' ? '#0f172a' : '#f0f4f8';
+            }
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            const next = current === 'dark' ? 'light' : 'dark';
+            applyTheme(next);
+        }
+
+        // --- Cloud Sync (Supabase) ---
+        const SUPABASE_URL = "https://mwnlnyobpqjuxfeqasrz.supabase.co";
+        const SUPABASE_ANON_KEY =
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13bmxueW9icHFqdXhmZXFhc3J6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNjQ4MzksImV4cCI6MjA5OTk0MDgzOX0.nsmBlMISJpmp9AZxn1Gfd4hs9IRkzWu8EIColXji8ko";
+        const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        // --- Seed data ---
+        const flat1Seed = [
+            { period: "Jan-21 - Mar-21", original: "15000", deduction: "0", received: "15000", remarks: "",
+            checked: true, color: "" },
+            { period: "Apr-21 - Jun-21", original: "15000", deduction: "0", received: "15000", remarks: "",
+            checked: true, color: "" },
+            { period: "Jul-21 - Sep-21", original: "15000", deduction: "0", received: "15000", remarks: "",
+            checked: true, color: "" },
+            { period: "Oct-21 - Dec-21", original: "15000", deduction: "0", received: "15000", remarks: "",
+            checked: true, color: "" },
+            { period: "Jan-22 - Mar-22", original: "15000", deduction: "0", received: "15000", remarks: "",
+            checked: true, color: "" },
+            { period: "Apr-22 - Jun-22", original: "15000", deduction: "0", received: "15000", remarks: "",
+            checked: true, color: "" },
+            { period: "Jul-22 - Sep-22", original: "15000", deduction: "0", received: "15000", remarks: "",
+            checked: true, color: "" },
+            { period: "Oct-22 - Dec-22", original: "15000", deduction: "0", received: "15000", remarks: "",
+            checked: true, color: "" },
+            { period: "Jan-23 - Mar-23", original: "16500", deduction: "16500", received: "0", remarks: "(-16,500 to Desoqy) to finalize contract",
+                checked: true, color: "color-green" },
+            { period: "Apr-23 - Jun-23", original: "16500", deduction: "0", received: "16500", remarks: "",
+            checked: true, color: "" },
+            { period: "Jul-23 - Sep-23", original: "16500", deduction: "0", received: "16500", remarks: "",
+            checked: true, color: "" },
+            { period: "Oct-23 - Dec-23", original: "16500", deduction: "0", received: "16500", remarks: "",
+            checked: true, color: "" },
+            { period: "Jan-24 - Mar-24", original: "18000", deduction: "0", received: "18000", remarks: "",
+            checked: true, color: "" },
+            { period: "Apr-24 - Jun-24", original: "18000", deduction: "78000", received: "0", remarks: "(-78,000 to Desoqy) Tasgeel Lama Flat",
+                checked: true, color: "color-magenta" },
+            { period: "Jul-24 - Sep-24", original: "18000", deduction: "0", received: "18000", remarks: "",
+            checked: true, color: "" },
+            { period: "Oct-24 - Dec-24", original: "18000", deduction: "0", received: "18000", remarks: "",
+            checked: true, color: "" },
+            { period: "Jan-25 - Mar-25", original: "18000", deduction: "0", received: "18000", remarks: "",
+            checked: true, color: "" },
+            { period: "Apr-25 - Jun-25", original: "18000", deduction: "0", received: "18000", remarks: "",
+            checked: true, color: "" },
+            { period: "Jul-25 - Sep-25", original: "18000", deduction: "0", received: "18000", remarks: "",
+            checked: true, color: "" },
+            { period: "Oct-25 - Dec-25", original: "18000", deduction: "39000", received: "0", remarks: "(-39,000 to Desoqy) for Egy Marriage Cert.",
+                checked: true, color: "color-green" },
+            { period: "Jan-26 - Mar-26", original: "27000", deduction: "0", received: "27000", remarks: "",
+            checked: true, color: "" },
+            { period: "Apr-26 - Jun-26", original: "27000", deduction: "27000", received: "0", remarks: "(-27,000 for Windows Alumetal)",
+                checked: true, color: "color-green" },
+            { period: "Jul-26 - Sep-26", original: "27000", deduction: "27000", received: "0", remarks: "(-27,000 for Windows Alumetal)",
+                checked: true, color: "color-green" },
+            { period: "Oct-26 - Dec-26", original: "27000", deduction: "6800", received: "20200", remarks: "(-6,800 for Windows Alumetal) Balance = 20,200",
+                checked: false, color: "" }
+        ];
+
+        const flat2Seed = [
+            { period: "Dec-20 - Feb-21", original: "19500", deduction: "0", received: "19500", remarks: "",
+            checked: true, color: "" },
+            { period: "Mar-21 - May-21", original: "19500", deduction: "0", received: "19500", remarks: "",
+            checked: true, color: "" },
+            { period: "Jun-21 - Aug-21", original: "19500", deduction: "0", received: "19500", remarks: "",
+            checked: true, color: "" },
+            { period: "Sep-21 - Nov-21", original: "19500", deduction: "0", received: "19500", remarks: "",
+            checked: true, color: "" },
+            { period: "Dec-21 - Feb-22", original: "19500", deduction: "0", received: "19500", remarks: "",
+            checked: true, color: "" },
+            { period: "Mar-22 - May-22", original: "15000", deduction: "0", received: "15000", remarks: "",
+            checked: true, color: "" },
+            { period: "Jun-22 - Aug-22", original: "15000", deduction: "0", received: "15000", remarks: "",
+            checked: true, color: "" },
+            { period: "Sep-22 - Nov-22", original: "15000", deduction: "0", received: "15000", remarks: "",
+            checked: true, color: "" },
+            { period: "Jan-23 - Mar-23", original: "21000", deduction: "7000", received: "14000", remarks: "(-7000 to Semsar)",
+                checked: true, color: "color-green" },
+            { period: "Apr-23 - Jun-23", original: "21000", deduction: "0", received: "21000", remarks: "",
+            checked: true, color: "" },
+            { period: "Jul-23 - Sep-23", original: "21000", deduction: "0", received: "21000", remarks: "",
+            checked: true, color: "" },
+            { period: "Oct-23 - Dec-23", original: "21000", deduction: "0", received: "21000", remarks: "",
+            checked: true, color: "" },
+            { period: "Jan-24 - Mar-24", original: "21000", deduction: "0", received: "21000", remarks: "",
+            checked: true, color: "" },
+            { period: "Apr-24 - Jun-24", original: "21000", deduction: "78000", received: "0", remarks: "(-78,000 to Desoqy) Tasgeel Lama Flat",
+                checked: true, color: "color-magenta" },
+            { period: "Jul-24 - Sep-24", original: "21000", deduction: "0", received: "21000", remarks: "",
+            checked: true, color: "" },
+            { period: "Oct-24 - Dec-24", original: "21000", deduction: "0", received: "21000", remarks: "",
+            checked: true, color: "" },
+            { period: "Jan-25 - Mar-25", original: "21000", deduction: "0", received: "21000", remarks: "",
+            checked: true, color: "" },
+            { period: "Apr-25 - Jun-25", original: "21000", deduction: "0", received: "21000", remarks: "",
+            checked: true, color: "" },
+            { period: "Jul-25 - Sep-25", original: "21000", deduction: "0", received: "21000", remarks: "",
+            checked: true, color: "" },
+            { period: "Oct-25 - Dec-25", original: "21000", deduction: "39000", received: "0", remarks: "(-39,000 to Desoqy) for Egy Marriage Cert.",
+                checked: true, color: "color-green" },
+            { period: "Jan-26 - Mar-26", original: "30000", deduction: "0", received: "30000", remarks: "",
+            checked: true, color: "" },
+            { period: "Apr-26 - Jun-26", original: "30000", deduction: "13000", received: "17000", remarks: "(-13,000 for Doc. DHL) Balance = 17000",
+                checked: false, color: "" },
+            { period: "Jul-26 - Sep-26", original: "30000", deduction: "0", received: "30000", remarks: "",
+            checked: true, color: "" },
+            { period: "Oct-26 - Dec-26", original: "30000", deduction: "0", received: "30000", remarks: "",
+            checked: true, color: "" }
+        ];
+
+        // --- Helpers ---
+        function setupDefaults() {
+            const currentYearMonth = "2026-07";
+            ['c1-from', 'c1-to', 'p1-start', 'p1-end', 'c2-from', 'c2-to', 'p2-start', 'p2-end'].forEach(id => {
+                document.getElementById(id).value = currentYearMonth;
+            });
+        }
+
+        function formatDisplayDate(inputVal) {
+            if (!inputVal) return "";
+            const parts = inputVal.split('-');
+            const year = parts[0].substring(2);
+            const monthIndex = parseInt(parts[1]) - 1;
+            return `${monthNames[monthIndex]}-${year}`;
+        }
+
+        function parseSingleMonthString(str) {
+            const parts = str.trim().split('-');
+            if (parts.length !== 2) return null;
+            const monthIndex = monthNames.indexOf(parts[0]);
+            const year = 2000 + parseInt(parts[1]);
+            if (monthIndex === -1 || isNaN(year)) return null;
+            return new Date(year, monthIndex, 1);
+        }
+
+        function parseContractDate(dateStr) {
+            const parts = dateStr.split('-');
+            const monthIdx = monthNames.indexOf(parts[0]);
+            const year = 2000 + parseInt(parts[1]);
+            return new Date(year, monthIdx, 1);
+        }
+
+        function formatCurrency(val) {
+            if (isNaN(val) || val === 0) return "—";
+            return val.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+
+        function formatPeriodLabel(startLabel, endLabel) {
+            return startLabel === endLabel ? startLabel : `${startLabel} - ${endLabel}`;
+        }
+
+        function parseFrequencyMonths(text) {
+            const match = (text || "").match(/\d+/);
+            const n = match ? parseInt(match[0], 10) : 3;
+            return (!n || n < 1) ? 3 : n;
+        }
+
+        function isFuturePeriod(periodStr) {
+            const parts = periodStr.split(' - ');
+            const startLabel = parts[0];
+            const start = parseSingleMonthString(startLabel);
+            if (!start) return false;
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            return start > today;
+        }
+
+        // --- Create payment row (remarks not editable by default) ---
+        function createPaymentRow(period, original, deduction, received, remarks, checked, colorVal) {
+            const row = document.createElement('tr');
+            const isFuture = isFuturePeriod(period);
+            const c0 = document.createElement('td');
+            c0.className = "rent-period-cell";
+            c0.setAttribute('data-label', 'Rent Period');
+            c0.textContent = period;
+            row.appendChild(c0);
+
+            const c1 = document.createElement('td');
+            c1.setAttribute('data-label', 'Original');
+            c1.textContent = isFuture ? "-" : (original || "0");
+            row.appendChild(c1);
+
+            const c2 = document.createElement('td');
+            c2.setAttribute('data-label', 'Deduction');
+            c2.textContent = isFuture ? "-" : (deduction || "0");
+            row.appendChild(c2);
+
+            const c3 = document.createElement('td');
+            c3.setAttribute('data-label', 'Received');
+            c3.textContent = isFuture ? "-" : (received || "0");
+            row.appendChild(c3);
+
+            const c4 = document.createElement('td');
+            c4.className = "remarks-cell";
+            c4.setAttribute('data-label', 'Remarks');
+            c4.textContent = remarks || "";
+            row.appendChild(c4);
+
+            const c5 = document.createElement('td');
+            c5.setAttribute('data-label', 'Bank');
+            const cb = document.createElement('input');
+            cb.type = "checkbox";
+            cb.checked = checked !== undefined ? checked : false;
+            cb.onchange = function() { handleRowChange(this); };
+            c5.appendChild(cb);
+            row.appendChild(c5);
+
+            const c6 = document.createElement('td');
+            c6.setAttribute('data-label', 'Color');
+            const container = document.createElement('div');
+            container.className = "color-picker-container";
+            const trigger = document.createElement('div');
+            trigger.className = "color-trigger";
+            trigger.textContent = "🎨";
+            trigger.onclick = function() { togglePopover(this); };
+            const popover = document.createElement('div');
+            popover.className = "color-palette-popover";
+            ["", "color-green", "color-magenta", "color-blue", "color-orange"].forEach(opt => {
+                const o = document.createElement('div');
+                o.className = "color-opt " + (opt ? opt.replace('color-', 'opt-') : 'opt-none');
+                o.onclick = function() { selectColor(this, opt); };
+                popover.appendChild(o);
+            });
+            const hidden = document.createElement('input');
+            hidden.type = "hidden";
+            hidden.className = "hidden-color-val";
+            hidden.value = colorVal || "";
+            container.appendChild(trigger);
+            container.appendChild(popover);
+            container.appendChild(hidden);
+            c6.appendChild(container);
+            row.appendChild(c6);
+
+            const c7 = document.createElement('td');
+            c7.setAttribute('data-label', 'Del');
+            const delBtn = document.createElement('button');
+            delBtn.className = "btn btn-danger";
+            delBtn.title = "Delete";
+            delBtn.innerHTML = "🗑️";
+            delBtn.onclick = function() { deleteRow(this); };
+            c7.appendChild(delBtn);
+            row.appendChild(c7);
+
+            const c8 = document.createElement('td');
+            c8.setAttribute('data-label', 'Edit');
+            const editBtn = document.createElement('button');
+            editBtn.className = "btn btn-edit";
+            editBtn.title = "Edit row";
+            editBtn.innerHTML = "✏️";
+            editBtn.onclick = function() { toggleEditRow(this); };
+            c8.appendChild(editBtn);
+            row.appendChild(c8);
+
+            if (colorVal) {
+                row.classList.add(colorVal);
+                const targetOpt = popover.querySelector('.' + colorVal.replace('color-', 'opt-'));
+                if (targetOpt) trigger.style.background = window.getComputedStyle(targetOpt).backgroundColor;
+            }
+            if (checked === false && received && received !== "-" && received !== "" && parseFloat(received) >= 0) {
+                row.classList.add('color-yellow');
+            }
+            return row;
+        }
+
+        function seedPaymentsTable(flatId, seedData) {
+            const tbody = document.getElementById(`payments-${flatId}`).getElementsByTagName('tbody')[0];
+            tbody.innerHTML = "";
+            seedData.forEach(item => {
+                const row = createPaymentRow(item.period, item.original, item.deduction, item.received, item.remarks,
+                    item.checked, item.color);
+                tbody.appendChild(row);
+            });
+        }
+
+        function sanitizeFuturePeriods(flatId) {
+            const tbody = document.getElementById(`payments-${flatId}`).getElementsByTagName('tbody')[0];
+            for (let row of tbody.rows) {
+                const period = row.cells[0].textContent.trim();
+                if (isFuturePeriod(period)) {
+                    row.cells[1].textContent = "-";
+                    row.cells[2].textContent = "-";
+                    row.cells[3].textContent = "-";
+                    row.className = "";
+                    const hiddenInput = row.cells[6].querySelector('.hidden-color-val');
+                    if (hiddenInput) {
+                        hiddenInput.value = "";
+                        const trigger = row.cells[6].querySelector('.color-trigger');
+                        if (trigger) {
+                            trigger.style.background = '#f1f5f9';
+                        }
+                    }
+                }
+            }
+        }
+
+        function syncPaymentPeriods(flatId) {
+            const contractRows = document.getElementById(`contracts-${flatId}`).getElementsByTagName('tbody')[0].rows;
+            if (contractRows.length === 0) return;
+            const intervals = [];
+            for (let cRow of contractRows) {
+                const fromStr = cRow.cells[0].textContent.trim();
+                const toStr = cRow.cells[1].textContent.trim();
+                const start = parseSingleMonthString(fromStr);
+                const end = parseSingleMonthString(toStr);
+                if (!start || !end) continue;
+                const freq = parseFrequencyMonths(cRow.cells[3] ? cRow.cells[3].textContent.trim() : "3");
+                let cur = new Date(start);
+                while (cur <= end) {
+                    const year = cur.getFullYear();
+                    const month = cur.getMonth();
+                    let endBlock = new Date(year, month + freq - 1, 1);
+                    if (endBlock > end) endBlock = new Date(end);
+                    const startLabel = `${monthNames[month]}-${String(year).substring(2)}`;
+                    const endLabel = `${monthNames[endBlock.getMonth()]}-${String(endBlock.getFullYear()).substring(2)}`;
+                    intervals.push(formatPeriodLabel(startLabel, endLabel));
+                    cur.setMonth(cur.getMonth() + freq);
+                }
+            }
+            const unique = [...new Set(intervals)];
+            const tbody = document.getElementById(`payments-${flatId}`).getElementsByTagName('tbody')[0];
+            const existingPeriods = new Set();
+            for (let row of tbody.rows) {
+                existingPeriods.add(row.cells[0].textContent.trim());
+            }
+            let added = 0;
+            unique.forEach(period => {
+                if (!existingPeriods.has(period)) {
+                    const row = createPaymentRow(period, "-", "-", "-", "", false, "");
+                    tbody.appendChild(row);
+                    added++;
+                }
+            });
+            if (added > 0) {
+                sanitizeFuturePeriods(flatId);
+                updateKPIs();
+            }
+        }
+
+        // --- UI Interactions ---
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.color-picker-container')) {
+                document.querySelectorAll('.color-palette-popover').forEach(p => p.classList.remove('active'));
+            }
+        });
+
+        function togglePopover(btn) {
+            const popover = btn.nextElementSibling;
+            const isOpen = popover.classList.contains('active');
+            document.querySelectorAll('.color-palette-popover').forEach(p => p.classList.remove('active'));
+            if (!isOpen) popover.classList.add('active');
+        }
+
+        function selectColor(opt, colorClass) {
+            const container = opt.closest('.color-picker-container');
+            const hiddenInput = container.querySelector('.hidden-color-val');
+            hiddenInput.value = colorClass;
+            const trigger = container.querySelector('.color-trigger');
+            if (colorClass) {
+                trigger.style.background = opt.style.backgroundColor || window.getComputedStyle(opt).backgroundColor;
+            } else {
+                trigger.style.background = '#f1f5f9';
+            }
+            container.querySelector('.color-palette-popover').classList.remove('active');
+            handleRowChange(trigger);
+        }
+
+        function deleteRow(btnElement) {
+            const row = btnElement.closest('tr');
+            const rentPeriod = row.cells[0].textContent.trim();
+            if (confirm(`Delete payment period "${rentPeriod}"?`)) {
+                row.remove();
+                updateKPIs();
+            }
+        }
+
+        function toggleEditRow(btnElement) {
+            const row = btnElement.closest('tr');
+            const editableCells = [row.cells[0], row.cells[1], row.cells[2], row.cells[3], row.cells[4]];
+            const isEditing = row.classList.contains('row-editing');
+            if (!isEditing) {
+                editableCells.forEach(cell => { cell.contentEditable = "true"; });
+                row.classList.add('row-editing');
+                btnElement.innerHTML = "💾";
+                btnElement.title = "Save changes";
+                btnElement.classList.remove('btn-edit');
+                btnElement.classList.add('btn-save');
+                editableCells[0].focus();
+            } else {
+                const newPeriod = row.cells[0].textContent.trim();
+                if (!newPeriod) { alert("Rent Period cannot be empty."); editableCells[0].focus(); return; }
+                editableCells.forEach(cell => { cell.contentEditable = "false"; });
+                row.classList.remove('row-editing');
+                btnElement.innerHTML = "✏️";
+                btnElement.title = "Edit row";
+                btnElement.classList.remove('btn-save');
+                btnElement.classList.add('btn-edit');
+                handleRowChange(row.cells[0]);
+            }
+        }
+
+        function handleRowChange(element) {
+            const row = element.closest('tr');
+            if (!row) return;
+            const checkbox = row.cells[5].querySelector('input[type="checkbox"]');
+            const hiddenColorInput = row.cells[6].querySelector('.hidden-color-val');
+            const finalAmountCell = row.cells[3];
+            const deductionCell = row.cells[2];
+            const isSentToBank = checkbox ? checkbox.checked : true;
+            const customColorClass = hiddenColorInput ? hiddenColorInput.value : "";
+            const amountText = finalAmountCell.textContent.trim();
+            const hasAmount = amountText !== "" && amountText !== "-" && amountText !== "0";
+            row.className = "";
+            if (!isSentToBank && hasAmount) {
+                row.classList.add('color-yellow');
+            } else if (customColorClass) {
+                row.classList.add(customColorClass);
+            }
+            const origText = row.cells[1].textContent.trim().replace(/,/g, '');
+            const dedText = deductionCell.textContent.trim().replace(/,/g, '');
+            const origNum = parseFloat(origText);
+            const dedNum = parseFloat(dedText);
+            if (!isNaN(origNum) && !isNaN(dedNum) && origText !== "" && dedText !== "" && origText !== "-" && dedText !==
+                "-") {
+                const recalc = origNum - dedNum;
+                if (recalc >= 0) {
+                    finalAmountCell.textContent = recalc;
+                }
+            }
+            updateKPIs();
+        }
+
+        // --- Contracts ---
+        function addContract(flatId) {
+            const suffix = flatId === 'flat1' ? '1' : '2';
+            const fromVal = document.getElementById(`c${suffix}-from`).value;
+            const toVal = document.getElementById(`c${suffix}-to`).value;
+            const rentVal = document.getElementById(`c${suffix}-rent`).value;
+            const freqSelect = document.getElementById(`c${suffix}-frequency`);
+            const freqLabel = freqSelect.options[freqSelect.selectedIndex].text;
+            const remarksVal = document.getElementById(`c${suffix}-remarks`).value;
+            if (!fromVal || !toVal) { alert("Please select both 'From' and 'To' dates."); return; }
+            if (!rentVal) { alert("Please enter a Monthly Rent."); return; }
+            const formattedFrom = formatDisplayDate(fromVal);
+            const formattedTo = formatDisplayDate(toVal);
+            const table = document.getElementById(`contracts-${flatId}`);
+            const tbody = table.getElementsByTagName('tbody')[0];
+            let existingRow = null;
+            for (let row of tbody.rows) {
+                if (row.cells[0].textContent.trim() === formattedFrom && row.cells[1].textContent.trim() === formattedTo) {
+                    existingRow = row;
+                    break;
+                }
+            }
+            if (existingRow) {
+                if (!confirm(`Contract "${formattedFrom}" to "${formattedTo}" exists. Update it?`)) return;
+                existingRow.cells[2].textContent = rentVal;
+                existingRow.cells[3].textContent = freqLabel;
+                existingRow.cells[4].textContent = remarksVal;
+                alert("Contract updated.");
+            } else {
+                const newRow = tbody.insertRow();
+                const contractLabels = ["From", "To", "Monthly Rent", "Frequency", "Remarks"];
+                [formattedFrom, formattedTo, rentVal, freqLabel, remarksVal].forEach((text, i) => {
+                    const c = newRow.insertCell(i);
+                    c.setAttribute('data-label', contractLabels[i]);
+                    c.textContent = text;
+                });
+                alert("Contract added.");
+            }
+            document.getElementById(`c${suffix}-rent`).value = '';
+            document.getElementById(`c${suffix}-remarks`).value = '';
+            syncPaymentPeriods(flatId);
+            sanitizeFuturePeriods(flatId);
+            calculateRentForm(flatId);
+            recalculateReceiptsFromContracts(flatId);
+        }
+
+        function calculateRentForm(flatId) {
+            const suffix = flatId === 'flat1' ? '1' : '2';
+            const startVal = document.getElementById(`p${suffix}-start`).value;
+            const endVal = document.getElementById(`p${suffix}-end`).value;
+            const deductionInput = document.getElementById(`p${suffix}-deduction`);
+            if (!startVal || !endVal) return;
+            const startDate = new Date(startVal + "-01");
+            const endDate = new Date(endVal + "-01");
+            if (startDate > endDate) {
+                document.getElementById(`p${suffix}-original`).value = '';
+                document.getElementById(`p${suffix}-received`).value = '';
+                return;
+            }
+            const diffMonths = (endDate.getFullYear() - startDate.getFullYear()) * 12 + (endDate.getMonth() - startDate
+                .getMonth()) + 1;
+            const contractRows = document.getElementById(`contracts-${flatId}`).getElementsByTagName('tbody')[0].rows;
+            let matchedMonthlyRent = null;
+            for (let row of contractRows) {
+                const conStart = parseContractDate(row.cells[0].textContent.trim());
+                const conEnd = parseContractDate(row.cells[1].textContent.trim());
+                const conRent = parseFloat(row.cells[2].textContent.trim());
+                if (startDate >= conStart && startDate <= conEnd) {
+                    matchedMonthlyRent = conRent;
+                    break;
+                }
+            }
+            if (matchedMonthlyRent !== null) {
+                const originalTotal = diffMonths * matchedMonthlyRent;
+                const deductionTotal = parseFloat(deductionInput.value) || 0;
+                const finalReceived = originalTotal - deductionTotal;
+                document.getElementById(`p${suffix}-original`).value = originalTotal;
+                document.getElementById(`p${suffix}-received`).value = finalReceived >= 0 ? finalReceived : 0;
+            } else {
+                document.getElementById(`p${suffix}-original`).value = "0";
+                document.getElementById(`p${suffix}-received`).value = "0";
+            }
+        }
+
+        function recalculateReceiptsFromContracts(flatId) {
+            const contractRows = document.getElementById(`contracts-${flatId}`).getElementsByTagName('tbody')[0].rows;
+            const paymentRows = document.getElementById(`payments-${flatId}`).getElementsByTagName('tbody')[0].rows;
+            const now = new Date();
+            for (let pRow of paymentRows) {
+                const periodText = pRow.cells[0].textContent.trim();
+                const dates = periodText.split(" - ");
+                const startLabel = dates[0];
+                const endLabel = dates.length >= 2 ? dates[1] : dates[0];
+                const startDate = parseSingleMonthString(startLabel);
+                const endDate = parseSingleMonthString(endLabel);
+                if (!startDate || !endDate) continue;
+                if (startDate > now) continue;
+                let matchedRate = null;
+                for (let cRow of contractRows) {
+                    const conStart = parseContractDate(cRow.cells[0].textContent.trim());
+                    const conEnd = parseContractDate(cRow.cells[1].textContent.trim());
+                    const conRent = parseFloat(cRow.cells[2].textContent.trim());
+                    if (startDate >= conStart && startDate <= conEnd) {
+                        matchedRate = conRent;
+                        break;
+                    }
+                }
+                if (matchedRate !== null) {
+                    const diffMonths = (endDate.getFullYear() - startDate.getFullYear()) * 12 + (endDate.getMonth() -
+                        startDate.getMonth()) + 1;
+                    const calculatedOriginal = diffMonths * matchedRate;
+                    const dedText = pRow.cells[2].textContent.trim().replace(/,/g, '');
+                    let deduction = parseFloat(dedText) || 0;
+                    const remarksText = pRow.cells[4].textContent.trim();
+                    const deductionMatch = remarksText.match(/\(-\s*([0-9,]+)/);
+                    if (deductionMatch && !dedText) {
+                        deduction = parseFloat(deductionMatch[1].replace(/,/g, '')) || 0;
+                        pRow.cells[2].textContent = deduction;
+                    }
+                    pRow.cells[1].textContent = calculatedOriginal;
+                    const received = calculatedOriginal - deduction;
+                    pRow.cells[3].textContent = received >= 0 ? received : 0;
+                    const checkbox = pRow.cells[5].querySelector('input[type="checkbox"]');
+                    if (checkbox) handleRowChange(checkbox);
+                }
+            }
+            sanitizeFuturePeriods(flatId);
+            updateKPIs();
+        }
+
+        // --- Payment CRUD ---
+        function addPayment(flatId) {
+            const suffix = flatId === 'flat1' ? '1' : '2';
+            const startVal = document.getElementById(`p${suffix}-start`).value;
+            const endVal = document.getElementById(`p${suffix}-end`).value;
+            const originalAmount = document.getElementById(`p${suffix}-original`).value;
+            const deductionAmount = document.getElementById(`p${suffix}-deduction`).value;
+            const receivedAmount = document.getElementById(`p${suffix}-received`).value;
+            const remarks = document.getElementById(`p${suffix}-remarks`).value;
+            const colorClass = document.getElementById(`p${suffix}-color`).value;
+            if (!startVal || !endVal) { alert("Please select Start and End month."); return; }
+            const formattedPeriod = formatPeriodLabel(formatDisplayDate(startVal), formatDisplayDate(endVal));
+            const table = document.getElementById(`payments-${flatId}`);
+            const tbody = table.getElementsByTagName('tbody')[0];
+            let existingRow = null;
+            for (let row of tbody.rows) {
+                if (row.cells[0].textContent.trim() === formattedPeriod) { existingRow = row; break; }
+            }
+            if (existingRow) {
+                if (!confirm(`Receipt for "${formattedPeriod}" exists. Update it?`)) return;
+                existingRow.cells[1].textContent = originalAmount || "0";
+                existingRow.cells[2].textContent = deductionAmount || "0";
+                existingRow.cells[3].textContent = receivedAmount || "0";
+                existingRow.cells[4].textContent = remarks || "";
+                const hiddenInput = existingRow.cells[6].querySelector('.hidden-color-val');
+                if (hiddenInput) {
+                    hiddenInput.value = colorClass;
+                    const trigger = existingRow.cells[6].querySelector('.color-trigger');
+                    if (colorClass) {
+                        const styleClass = colorClass.replace('color-', 'opt-');
+                        const optElement = existingRow.cells[6].querySelector('.' + styleClass);
+                        if (optElement) trigger.style.background = window.getComputedStyle(optElement).backgroundColor;
+                    } else {
+                        trigger.style.background = '#f1f5f9';
+                    }
+                }
+                handleRowChange(hiddenInput);
+                alert(`Updated "${formattedPeriod}".`);
+            } else {
+                const row = createPaymentRow(formattedPeriod, originalAmount || "0", deductionAmount || "0", receivedAmount ||
+                    "0", remarks, false, colorClass);
+                tbody.appendChild(row);
+                alert(`Added "${formattedPeriod}".`);
+            }
+            document.getElementById(`p${suffix}-original`).value = '';
+            document.getElementById(`p${suffix}-deduction`).value = '0';
+            document.getElementById(`p${suffix}-received`).value = '';
+            document.getElementById(`p${suffix}-remarks`).value = '';
+            document.getElementById(`p${suffix}-color`).value = '';
+            sanitizeFuturePeriods(flatId);
+            updateKPIs();
+        }
+
+        // --- KPI ---
+        function calculateFlatTotals(flatId) {
+            const paymentRows = document.getElementById(`payments-${flatId}`).getElementsByTagName('tbody')[0].rows;
+            let collected = 0,
+                pending = 0;
+            for (let row of paymentRows) {
+                const receivedText = row.cells[3].textContent.trim().replace(/,/g, '');
+                const receivedVal = parseFloat(receivedText);
+                const isChecked = row.cells[5].querySelector('input[type="checkbox"]')?.checked || false;
+                const hasReceived = receivedText !== "" && receivedText !== "-" && !isNaN(receivedVal) && receivedVal >= 0;
+                if (hasReceived) {
+                    collected += receivedVal;
+                    if (!isChecked) pending += receivedVal;
+                }
+            }
+            return { collected, pending };
+        }
+
+        function updateKPIs() {
+            const flat1 = calculateFlatTotals('flat1');
+            const flat2 = calculateFlatTotals('flat2');
+            const totalCollected = flat1.collected + flat2.collected;
+            const totalPending = flat1.pending + flat2.pending;
+            document.getElementById('kpi-flat1-collected').textContent = formatCurrency(flat1.collected);
+            document.getElementById('kpi-flat2-collected').textContent = formatCurrency(flat2.collected);
+            document.getElementById('kpi-total-collected').textContent = formatCurrency(totalCollected);
+            document.getElementById('kpi-pending').textContent = formatCurrency(totalPending);
+            renderDueAlerts();
+        }
+
+        // --- Alerts ---
+        function endOfMonthFromLabel(label) {
+            const d = parseSingleMonthString(label.trim());
+            if (!d) return null;
+            return new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59);
+        }
+
+        function startOfMonthFromLabel(label) {
+            const d = parseSingleMonthString(label.trim());
+            if (!d) return null;
+            return new Date(d.getFullYear(), d.getMonth(), 1, 0, 0, 0);
+        }
+
+        function getFlatDueStatus(flatId, flatLabel) {
+            const paymentRows = document.getElementById(`payments-${flatId}`).getElementsByTagName('tbody')[0].rows;
+            const notCollectedItems = [];
+            const pendingItems = [];
+            let latestEnd = null,
+                latestLabel = "";
+            const now = new Date();
+            for (let row of paymentRows) {
+                const periodText = row.cells[0].textContent.trim();
+                const parts = periodText.split(' - ');
+                const startLabel = parts.length === 2 ? parts[0] : periodText;
+                const endLabel = parts.length === 2 ? parts[1] : periodText;
+                const dueDate = startOfMonthFromLabel(startLabel);
+                const endDate = endOfMonthFromLabel(endLabel);
+                if (endDate && (!latestEnd || endDate > latestEnd)) {
+                    latestEnd = endDate;
+                    latestLabel = periodText;
+                }
+                const origText = row.cells[1].textContent.trim().replace(/,/g, '');
+                const origVal = parseFloat(origText);
+                const recvText = row.cells[3].textContent.trim().replace(/,/g, '');
+                const recvVal = parseFloat(recvText);
+                const isChecked = row.cells[5].querySelector('input[type="checkbox"]')?.checked || false;
+                const hasBeenCollected = recvText !== "" && recvText !== "-" && !isNaN(recvVal) && recvVal >= 0;
+
+                if (hasBeenCollected && !isChecked) {
+                    pendingItems.push({ period: periodText, amount: recvVal });
+                }
+                const periodIsDue = dueDate ? now >= dueDate : false;
+                if (!hasBeenCollected && periodIsDue) {
+                    notCollectedItems.push({ period: periodText, amount: (!isNaN(origVal) ? origVal : 0), dueDate });
+                }
+            }
+            const overdueEligible = latestEnd && now > latestEnd;
+            const overdueMonths = overdueEligible ? (now.getFullYear() - latestEnd.getFullYear()) * 12 + (now.getMonth() -
+                latestEnd.getMonth()) : 0;
+            return { flatLabel, notCollectedItems, pendingItems, overdue: overdueEligible, overdueMonths, latestLabel };
+        }
+
+        function renderDueAlerts() {
+            const section = document.getElementById('dueAlertsSection');
+            const headerText = document.getElementById('alertHeaderText');
+            const list = document.getElementById('alertList');
+            if (!section || !list) return;
+            const statuses = [
+                getFlatDueStatus('flat1', 'Flat 1 — Ahmad'),
+                getFlatDueStatus('flat2', 'Flat 2 — Lamlom')
+            ];
+            const items = [];
+            statuses.forEach(s => {
+                const sortedNotCollected = [...s.notCollectedItems].sort((a, b) => (a.dueDate && b.dueDate) ? a
+                    .dueDate - b.dueDate : 0);
+                sortedNotCollected.forEach(item => {
+                    const amountText = item.amount > 0 ? ` (approx. <strong>${formatCurrency(item.amount)}</strong>)` :
+                        '';
+                    items.push({
+                        severity: 'notcollected',
+                        icon: '🔴',
+                        html: `<strong>${s.flatLabel}</strong> — rent period <strong>${item.period}</strong> is due but <strong>not yet collected</strong>${amountText}.<span class="alert-tag">Not Collected</span>`
+                    });
+                });
+                if (s.overdue) {
+                    const monthsText = s.overdueMonths >= 1 ? `${s.overdueMonths} month${s.overdueMonths > 1 ? 's' : ''} overdue` :
+                        'due now';
+                    items.push({
+                        severity: 'overdue',
+                        icon: '⏰',
+                        html: `<strong>${s.flatLabel}</strong> — no rent period recorded after <strong>${s.latestLabel || '—'}</strong>. Next period appears <strong>${monthsText}</strong>.<span class="alert-tag">Overdue</span>`
+                    });
+                }
+                s.pendingItems.forEach(item => {
+                    items.push({
+                        severity: 'pending',
+                        icon: '🏦',
+                        html: `<strong>${s.flatLabel}</strong> — rent period <strong>${item.period}</strong> collected (<strong>${formatCurrency(item.amount)}</strong>) but not yet sent to bank.<span class="alert-tag">Pending Transfer</span>`
+                    });
+                });
+            });
+            if (items.length === 0) {
+                section.className = 'alert-section is-clear';
+                headerText.textContent = 'All rents are up to date — nothing due, uncollected, or pending';
+                section.querySelector('.alert-header-icon').textContent = '✅';
+                list.innerHTML = '';
+            } else {
+                const notCollectedTotal = items.filter(i => i.severity === 'notcollected').length;
+                const overdueCount = items.filter(i => i.severity === 'overdue').length;
+                const pendingCount = items.filter(i => i.severity === 'pending').length;
+                section.className = 'alert-section has-warnings';
+                section.querySelector('.alert-header-icon').textContent = '⚠️';
+                const parts = [];
+                if (notCollectedTotal) parts.push(`${notCollectedTotal} not collected`);
+                if (overdueCount) parts.push(`${overdueCount} overdue`);
+                if (pendingCount) parts.push(`${pendingCount} pending bank transfer`);
+                headerText.textContent = `Attention needed — ${parts.join(' · ')}`;
+                list.innerHTML = items.map(i =>
+                    `<div class="alert-item severity-${i.severity}"><span class="alert-icon">${i.icon}</span><span>${i.html}</span></div>`
+                    ).join('');
+            }
+        }
+
+        // --- Save / Load ---
+        function getTableData(tableId, isPaymentTable) {
+            const tbody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+            const data = [];
+            for (let row of tbody.rows) {
+                if (isPaymentTable) {
+                    data.push({
+                        period: row.cells[0].textContent,
+                        originalAmount: row.cells[1].textContent,
+                        deductionAmount: row.cells[2].textContent,
+                        receivedAmount: row.cells[3].textContent,
+                        remarks: row.cells[4].textContent,
+                        checked: row.cells[5].querySelector('input[type="checkbox"]')?.checked || false,
+                        colorVal: row.cells[6].querySelector('.hidden-color-val')?.value || ""
+                    });
+                } else {
+                    data.push({
+                        from: row.cells[0].textContent,
+                        to: row.cells[1].textContent,
+                        rent: row.cells[2].textContent,
+                        frequency: row.cells[3].textContent,
+                        remarks: row.cells[4].textContent
+                    });
+                }
+            }
+            return data;
+        }
+
+        function saveTrackerData() {
+            const trackerData = {
+                flat1: { contracts: getTableData('contracts-flat1', false), payments: getTableData('payments-flat1',
+                    true) },
+                flat2: { contracts: getTableData('contracts-flat2', false), payments: getTableData('payments-flat2',
+                    true) }
+            };
+            localStorage.setItem('flatRentTrackerData', JSON.stringify(trackerData));
+            localStorage.setItem('rentTrackerLocalUpdatedAt', new Date().toISOString());
+            pushToCloud().then(ok => {
+                alert(ok === true ? "Progress saved successfully! (synced to cloud)" : "Progress saved successfully!");
+            });
+        }
+
+        function loadTrackerData() {
+            const savedString = localStorage.getItem('flatRentTrackerData');
+            if (!savedString) return;
+            try {
+                const data = JSON.parse(savedString);
+                if (data.flat1) {
+                    repopulateContractsTable('contracts-flat1', data.flat1.contracts);
+                    repopulatePaymentsTable('payments-flat1', data.flat1.payments);
+                }
+                if (data.flat2) {
+                    repopulateContractsTable('contracts-flat2', data.flat2.contracts);
+                    repopulatePaymentsTable('payments-flat2', data.flat2.payments);
+                }
+                sanitizeFuturePeriods('flat1');
+                sanitizeFuturePeriods('flat2');
+            } catch (e) { console.error("Error loading saved data:", e); }
+        }
+
+        function repopulateContractsTable(tableId, contractData) {
+            if (!contractData) return;
+            const tbody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+            tbody.innerHTML = "";
+            const contractLabels = ["From", "To", "Monthly Rent", "Frequency", "Remarks"];
+            contractData.forEach(item => {
+                const row = tbody.insertRow();
+                [item.from, item.to, item.rent, item.frequency || "Every 3 Months", item.remarks].forEach((text,
+                i) => {
+                    const c = row.insertCell(i);
+                    c.setAttribute('data-label', contractLabels[i]);
+                    c.textContent = text;
+                });
+            });
+        }
+
+        function repopulatePaymentsTable(tableId, paymentData) {
+            if (!paymentData) return;
+            const tbody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+            tbody.innerHTML = "";
+            paymentData.forEach(item => {
+                const row = createPaymentRow(item.period, item.originalAmount, item.deductionAmount, item
+                    .receivedAmount, item.remarks, item.checked, item.colorVal);
+                tbody.appendChild(row);
+            });
+        }
+
+        // --- Backup / Restore ---
+        function buildTrackerDataObject() {
+            return {
+                flat1: { contracts: getTableData('contracts-flat1', false), payments: getTableData('payments-flat1',
+                    true) },
+                flat2: { contracts: getTableData('contracts-flat2', false), payments: getTableData('payments-flat2',
+                    true) },
+                exportedAt: new Date().toISOString()
+            };
+        }
+
+        function exportDataAsJSON() {
+            const trackerData = buildTrackerDataObject();
+            const blob = new Blob([JSON.stringify(trackerData, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const dateStr = new Date().toISOString().slice(0, 10);
+            a.href = url;
+            a.download = `flat-rent-tracker-backup-${dateStr}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function triggerImportData() {
+            document.getElementById('importFileInput').click();
+        }
+
+        function importDataFromJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!data.flat1 && !data.flat2) { alert("This doesn't look like a valid backup file."); return; }
+                    if (!confirm(
+                        "This will replace all current data in the tracker with the backup file's data. Continue?"
+                        )) return;
+                    if (data.flat1) {
+                        repopulateContractsTable('contracts-flat1', data.flat1.contracts);
+                        repopulatePaymentsTable('payments-flat1', data.flat1.payments);
+                    }
+                    if (data.flat2) {
+                        repopulateContractsTable('contracts-flat2', data.flat2.contracts);
+                        repopulatePaymentsTable('payments-flat2', data.flat2.payments);
+                    }
+                    sanitizeFuturePeriods('flat1');
+                    sanitizeFuturePeriods('flat2');
+                    syncPaymentPeriods('flat1');
+                    syncPaymentPeriods('flat2');
+                    sanitizeFuturePeriods('flat1');
+                    sanitizeFuturePeriods('flat2');
+                    updateKPIs();
+                    localStorage.setItem('flatRentTrackerData', JSON.stringify(buildTrackerDataObject()));
+                    localStorage.setItem('rentTrackerLocalUpdatedAt', new Date().toISOString());
+                    pushToCloud();
+                    alert("Data restored successfully!");
+                } catch (err) {
+                    console.error("Error importing backup:", err);
+                    alert("Couldn't read that file. Please make sure it's a valid backup JSON exported from this app.");
+                } finally {
+                    event.target.value = "";
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // --- Cloud Sync ---
+        function getSyncPasscode() {
+            return localStorage.getItem('rentSyncPasscode');
+        }
+
+        function setSyncStatus(text) {
+            const el = document.getElementById('syncStatusLine');
+            if (el) el.textContent = text;
+        }
+
+        function updateSyncButtonLabel() {
+            const label = document.getElementById('cloudSyncBtnLabel');
+            if (label) label.textContent = getSyncPasscode() ? "Cloud Sync: ON" : "Cloud Sync";
+        }
+
+        async function pushToCloud() {
+            const passcode = getSyncPasscode();
+            if (!passcode || !supabaseClient) return false;
+            try {
+                const nowIso = new Date().toISOString();
+                const { error } = await supabaseClient
+                    .from('rent_tracker_sync')
+                    .upsert({ passcode: passcode, data: buildTrackerDataObject(), updated_at: nowIso });
+                if (error) throw error;
+                localStorage.setItem('rentTrackerLocalUpdatedAt', nowIso);
+                setSyncStatus("Cloud sync: last updated just now");
+                return true;
+            } catch (err) {
+                console.error("Cloud push failed:", err);
+                setSyncStatus("Cloud sync: couldn't reach server");
+                return false;
+            }
+        }
+
+        function applyCloudData(data) {
+            if (data.flat1) {
+                repopulateContractsTable('contracts-flat1', data.flat1.contracts);
+                repopulatePaymentsTable('payments-flat1', data.flat1.payments);
+            }
+            if (data.flat2) {
+                repopulateContractsTable('contracts-flat2', data.flat2.contracts);
+                repopulatePaymentsTable('payments-flat2', data.flat2.payments);
+            }
+            sanitizeFuturePeriods('flat1');
+            sanitizeFuturePeriods('flat2');
+            syncPaymentPeriods('flat1');
+            syncPaymentPeriods('flat2');
+            sanitizeFuturePeriods('flat1');
+            sanitizeFuturePeriods('flat2');
+            updateKPIs();
+            localStorage.setItem('flatRentTrackerData', JSON.stringify(buildTrackerDataObject()));
+        }
+
+        async function syncNow(isManualSetup) {
+            const passcode = getSyncPasscode();
+            if (!passcode || !supabaseClient) return;
+            setSyncStatus("Cloud sync: checking…");
+            try {
+                const { data: rows, error } = await supabaseClient
+                    .from('rent_tracker_sync')
+                    .select('data, updated_at')
+                    .eq('passcode', passcode)
+                    .limit(1);
+                if (error) throw error;
+                const cloudRow = rows && rows[0];
+                const localTs = localStorage.getItem('rentTrackerLocalUpdatedAt');
+
+                if (cloudRow) {
+                    const cloudTs = new Date(cloudRow.updated_at);
+                    if (!localTs || cloudTs > new Date(localTs)) {
+                        applyCloudData(cloudRow.data);
+                        localStorage.setItem('rentTrackerLocalUpdatedAt', cloudRow.updated_at);
+                        setSyncStatus("Cloud sync: pulled latest data from another device");
+                        if (isManualSetup) alert("Found existing synced data for this passcode — loaded it in.");
+                    } else if (new Date(localTs) > cloudTs) {
+                        await pushToCloud();
+                    } else {
+                        setSyncStatus("Cloud sync: up to date");
+                    }
+                } else {
+                    await pushToCloud();
+                    if (isManualSetup) alert(
+                        "Cloud sync is on. This device's data is now the starting point — open the app with the same passcode on your other device to pull it in."
+                        );
+                }
+            } catch (err) {
+                console.error("Cloud sync failed:", err);
+                setSyncStatus("Cloud sync: couldn't reach server");
+            }
+            updateSyncButtonLabel();
+        }
+
+        function openSyncSettings() {
+            const current = getSyncPasscode();
+            const msg = current ?
+                `Cloud sync is ON.\n\nEnter a new passcode to switch/change it, clear the box and press OK to turn sync OFF on this device, or press Cancel to leave it as is.` :
+                `Enter a passcode to turn on cloud sync. Use the exact same passcode on every device you want kept in sync — write it down somewhere safe, it's the only way to reconnect your data.`;
+            const input = prompt(msg, current || "");
+            if (input === null) return;
+            if (input.trim() === "") {
+                localStorage.removeItem('rentSyncPasscode');
+                setSyncStatus("");
+                updateSyncButtonLabel();
+                alert("Cloud sync turned off on this device. Your data stays saved locally as before.");
+                return;
+            }
+            localStorage.setItem('rentSyncPasscode', input.trim());
+            updateSyncButtonLabel();
+            syncNow(true);
+        }
+
+        function initCloudSync() {
+            updateSyncButtonLabel();
+            if (getSyncPasscode()) syncNow(false);
+        }
+
+        // --- Excel Export ---
+        function exportToExcelFormatted() {
+            const wb = XLSX.utils.book_new();
+            wb.Props = { Title: "Rent Collection Report", Subject: "Flat Rent Tracker", Author: "Flat Rent Tracker Pro",
+                CreatedDate: new Date() };
+            const ws = {};
+            const colors = {
+                titleBg: "1E293B",
+                titleText: "FFFFFF",
+                headerBg: "F1F5F9",
+                headerText: "1E293B",
+                subHeaderBg: "F8FAFC",
+                subHeaderText: "334155",
+                flat1Bg: "EFF6FF",
+                flat2Bg: "F5F3FF",
+                borderLight: "E2E8F0",
+                borderDark: "94A3B8",
+                white: "FFFFFF",
+                altRow: "F8FAFC",
+                successBg: "DCFCE7",
+                successText: "166534",
+                warningBg: "FEF9C3",
+                warningText: "854D0E",
+                pendingBg: "F1F5F9",
+                pendingText: "475569"
+            };
+            const getFill = (hex) => ({ fgColor: { rgb: hex } });
+            const bLight = { style: "thin", color: { rgb: colors.borderLight } };
+            const bDark = { style: "thin", color: { rgb: colors.borderDark } };
+            const bNone = { style: "none" };
+            const B_DATA = { top: bLight, bottom: bLight, left: bLight, right: bLight };
+            const B_HEADER = { top: bDark, bottom: bDark, left: bDark, right: bDark };
+            const B_NO_BORDER = { top: bNone, bottom: bNone, left: bNone, right: bNone };
+            const F_TITLE = { name: "Segoe UI", sz: 16, bold: true, color: { rgb: colors.titleText } };
+            const F_SUBTITLE = { name: "Segoe UI", sz: 10, italic: true, color: { rgb: "64748B" } };
+            const F_HEADER = { name: "Segoe UI", sz: 11, bold: true, color: { rgb: colors.headerText } };
+            const F_SUBHEADER = { name: "Segoe UI", sz: 10, bold: true, color: { rgb: colors.subHeaderText } };
+            const F_DATA = { name: "Segoe UI", sz: 10, color: { rgb: "1E293B" } };
+            const F_DATA_BOLD = { name: "Segoe UI", sz: 10, bold: true, color: { rgb: "0F172A" } };
+            const AL_C = { horizontal: "center", vertical: "center", wrapText: true };
+            const AL_L = { horizontal: "left", vertical: "center", wrapText: true };
+            const AL_R = { horizontal: "right", vertical: "center" };
+
+            const W = (r, c, val, font, fill, align, border, numFmt) => {
+                const ref = String.fromCharCode(65 + c) + (r + 1);
+                const t = (typeof val === 'number') ? 'n' : 's';
+                const cell = { v: val, t, s: { font: font || F_DATA, alignment: align || AL_C, border: border ||
+                        B_DATA } };
+                if (fill) cell.s.fill = fill;
+                if (numFmt) cell.s.numFmt = numFmt;
+                ws[ref] = cell;
+            };
+
+            const f1 = calculateFlatTotals('flat1');
+            const f2 = calculateFlatTotals('flat2');
+            const grandTotal = f1.collected + f2.collected;
+            const grandPending = f1.pending + f2.pending;
+            let row = 0;
+            const today = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+            W(row, 0, "RENT COLLECTION REPORT", F_TITLE, getFill(colors.titleBg), AL_C, B_NO_BORDER);
+            for (let c = 1; c <= 7; c++) W(row, c, "", F_TITLE, getFill(colors.titleBg), AL_C, B_NO_BORDER);
+            row++;
+            W(row, 0, `Generated on: ${today}`, F_SUBTITLE, null, AL_L, B_NO_BORDER);
+            row++;
+            row++;
+
+            W(row, 0, "FINANCIAL SUMMARY", F_HEADER, getFill(colors.headerBg), AL_L, B_HEADER);
+            for (let c = 1; c <= 7; c++) W(row, c, "", F_HEADER, getFill(colors.headerBg), AL_L, B_HEADER);
+            row++;
+            const kpiLabels = ["Flat 1 — Ahmad", "Flat 2 — Lamlom", "Combined Total", "Pending (Not to Bank)"];
+            const kpiColors = [colors.flat1Bg, colors.flat2Bg, "E2E8F0", colors.warningBg];
+            kpiLabels.forEach((label, i) => {
+                if (i > 3) return;
+                W(row, i * 2, label, F_SUBHEADER, getFill(kpiColors[i]), AL_C, B_DATA);
+                W(row, i * 2 + 1, "", F_SUBHEADER, getFill(kpiColors[i]), AL_C, B_DATA);
+            });
+            row++;
+            const kpiValues = [f1.collected, f2.collected, grandTotal, grandPending];
+            kpiValues.forEach((val, i) => {
+                if (i > 3) return;
+                W(row, i * 2, val, { name: "Segoe UI", sz: 12, bold: true, color: { rgb: (i === 3 && val > 0) ?
+                        colors.warningText : "0F172A" } }, null, AL_R, B_DATA, '#,##0');
+                W(row, i * 2 + 1, "", F_DATA, null, AL_C, B_DATA);
+            });
+            row++;
+            row++;
+
+            const sections = [
+                { label: "Flat 1 — Ahmad", flatId: "flat1", headerColor: "2563EB" },
+                { label: "Flat 2 — Lamlom", flatId: "flat2", headerColor: "7C3AED" }
+            ];
+
+            sections.forEach((section) => {
+                W(row, 0, `${section.label} Contracts`, F_HEADER, getFill(section.headerColor), AL_L, B_HEADER);
+                for (let c = 1; c <= 7; c++) W(row, c, "", F_HEADER, getFill(section.headerColor), AL_L, B_HEADER);
+                row++;
+                const conCols = ["From", "To", "Monthly Rent", "Frequency", "Remarks"];
+                conCols.forEach((h, i) => W(row, i, h, F_SUBHEADER, getFill(colors.subHeaderBg), AL_C, B_DATA));
+                row++;
+                const conRows = document.getElementById(`contracts-${section.flatId}`).getElementsByTagName('tbody')[0]
+                    .rows;
+                if (conRows.length === 0) { W(row, 0, "No contracts defined", F_SUBTITLE, null, AL_L, B_DATA);
+                    row++; } else {
+                    for (let i = 0; i < conRows.length; i++) {
+                        const r = conRows[i];
+                        const altFill = i % 2 === 0 ? getFill(colors.white) : getFill(colors.altRow);
+                        W(row, 0, r.cells[0].textContent.trim(), F_DATA, altFill, AL_C, B_DATA);
+                        W(row, 1, r.cells[1].textContent.trim(), F_DATA, altFill, AL_C, B_DATA);
+                        W(row, 2, Number(r.cells[2].textContent.trim()) || 0, F_DATA_BOLD, altFill, AL_R, B_DATA,
+                            '#,##0');
+                        W(row, 3, r.cells[3].textContent.trim(), F_DATA, altFill, AL_C, B_DATA);
+                        W(row, 4, r.cells[4].textContent.trim(), F_DATA, altFill, AL_L, B_DATA);
+                        row++;
+                    }
+                }
+                row++;
+
+                W(row, 0, `${section.label} Receipts`, F_HEADER, getFill(section.headerColor), AL_L, B_HEADER);
+                for (let c = 1; c <= 7; c++) W(row, c, "", F_HEADER, getFill(section.headerColor), AL_L, B_HEADER);
+                row++;
+                const recCols = ["Period", "Original", "Deduction", "Received", "Status", "Remarks"];
+                recCols.forEach((h, i) => W(row, i, h, F_SUBHEADER, getFill(colors.subHeaderBg), AL_C, B_DATA));
+                row++;
+                const payRows = document.getElementById(`payments-${section.flatId}`).getElementsByTagName('tbody')[0]
+                    .rows;
+                if (payRows.length === 0) { W(row, 0, "No receipts recorded", F_SUBTITLE, null, AL_L, B_DATA);
+                    row++; } else {
+                    for (let i = 0; i < payRows.length; i++) {
+                        const r = payRows[i];
+                        const altFill = i % 2 === 0 ? null : getFill(colors.altRow);
+                        const orig = r.cells[1].textContent.trim();
+                        const origVal = (orig !== "-" && orig !== "") ? (Number(orig) || orig) : "-";
+                        const ded = r.cells[2].textContent.trim();
+                        const dedVal = (ded !== "-" && ded !== "") ? (Number(ded) || ded) : "-";
+                        const rec = r.cells[3].textContent.trim();
+                        const recVal = (rec !== "-" && rec !== "") ? (Number(rec) || rec) : "-";
+                        const remarks = r.cells[4].textContent.trim();
+                        const isChecked = r.cells[5].querySelector('input[type="checkbox"]')?.checked || false;
+                        const hiddenColor = r.cells[6].querySelector('.hidden-color-val');
+                        const selColor = hiddenColor ? hiddenColor.value : "";
+
+                        let status = "No Payment";
+                        let statusColor = colors.pendingBg;
+                        let statusTextColor = colors.pendingText;
+                        const hasReceived = (recVal !== "-" && recVal !== "" && recVal !== 0);
+                        if (hasReceived) {
+                            if (isChecked) { status = "Sent to Bank";
+                                statusColor = colors.successBg;
+                                statusTextColor = colors.successText; } else { status = "Pending Transfer";
+                                statusColor = colors.warningBg;
+                                statusTextColor = colors.warningText; }
+                        }
+                        const rowColorMap = {
+                            'color-green': "D1FAE5",
+                            'color-magenta': "FCE7F3",
+                            'color-yellow': "FEF9C3",
+                            'color-blue': "DBEAFE",
+                            'color-orange': "FFEDD5"
+                        };
+                        const rowFill = selColor ? getFill(rowColorMap[selColor] || colors.white) : altFill;
+
+                        W(row, 0, r.cells[0].textContent.trim(), F_DATA, rowFill, AL_C, B_DATA);
+                        if (typeof origVal === 'number') W(row, 1, origVal, F_DATA, rowFill, AL_R, B_DATA,
+                        '#,##0');
+                        else W(row, 1, origVal, F_DATA, rowFill, AL_C, B_DATA);
+                        if (typeof dedVal === 'number') W(row, 2, dedVal, F_DATA, rowFill, AL_R, B_DATA,
+                        '#,##0');
+                        else W(row, 2, dedVal, F_DATA, rowFill, AL_C, B_DATA);
+                        if (typeof recVal === 'number') W(row, 3, recVal, F_DATA_BOLD, rowFill, AL_R, B_DATA,
+                            '#,##0');
+                        else W(row, 3, recVal, F_DATA_BOLD, rowFill, AL_C, B_DATA);
+
+                        const statusFont = { name: "Segoe UI", sz: 9, bold: true, color: { rgb: statusTextColor } };
+                        W(row, 4, status, statusFont, getFill(statusColor), AL_C, B_DATA);
+                        W(row, 5, remarks, F_DATA, rowFill, AL_L, B_DATA);
+                        row++;
+                    }
+                }
+                row++;
+            });
+
+            W(row, 0, "REPORT TOTALS", F_HEADER, getFill(colors.headerBg), AL_L, B_HEADER);
+            for (let c = 1; c <= 7; c++) W(row, c, "", F_HEADER, getFill(colors.headerBg), AL_L, B_HEADER);
+            row++;
+            const totalRowFont = { name: "Segoe UI", sz: 11, bold: true, color: { rgb: "0F172A" } };
+            const summaryRows = [];
+            summaryRows.push(row);
+            W(row, 0, "Grand Total Collected (Both Flats)", F_DATA, getFill(colors.successBg), AL_L, B_DATA);
+            for (let c = 1; c <= 4; c++) W(row, c, "", F_DATA, getFill(colors.successBg), AL_L, B_DATA);
+            W(row, 5, grandTotal, totalRowFont, getFill(colors.successBg), AL_R, B_DATA, '#,##0');
+            row++;
+            summaryRows.push(row);
+            W(row, 0, "Grand Total Pending (Awaiting Bank Transfer)", F_DATA, getFill(colors.warningBg), AL_L, B_DATA);
+            for (let c = 1; c <= 4; c++) W(row, c, "", F_DATA, getFill(colors.warningBg), AL_L, B_DATA);
+            W(row, 5, grandPending, totalRowFont, getFill(colors.warningBg), AL_R, B_DATA, '#,##0');
+            row++;
+            row++;
+
+            W(row, 0, "Report generated automatically from Flat Rent Tracker Pro.", F_SUBTITLE, null, AL_L, B_NO_BORDER);
+            row++;
+            W(row, 0,
+                "All figures are shown in the currency used within the tracker. This report is confidential.",
+                F_SUBTITLE, null, AL_L, B_NO_BORDER);
+
+            const merges = [
+                { s: { r: 0, c: 0 }, e: { r: 0, c: 7 } },
+                { s: { r: 1, c: 0 }, e: { r: 1, c: 7 } }
+            ];
+            summaryRows.forEach(r => merges.push({ s: { r: r, c: 0 }, e: { r: r, c: 4 } }));
+            for (const key in ws) {
+                if (key.startsWith('A')) {
+                    const r = parseInt(key.substring(1)) - 1;
+                    if (ws[key] && ws[key].s && ws[key].s.fill &&
+                        (ws[key].s.fill.fgColor.rgb === colors.headerBg ||
+                            ws[key].s.fill.fgColor.rgb === "2563EB" ||
+                            ws[key].s.fill.fgColor.rgb === "7C3AED")) {
+                        merges.push({ s: { r: r, c: 0 }, e: { r: r, c: 7 } });
+                    }
+                }
+            }
+            ws['!merges'] = merges;
+            ws['!cols'] = [{ wch: 22 }, { wch: 14 }, { wch: 14 }, { wch: 16 }, { wch: 20 }, { wch: 40 }];
+            ws['!ref'] = `A1:F${row}`;
+            ws['!print'] = { orientation: 'landscape', fitToWidth: 1, fitToHeight: 0 };
+            const rowHeights = [];
+            rowHeights[0] = { hpx: 30 };
+            ws['!rows'] = rowHeights;
+
+            XLSX.utils.book_append_sheet(wb, ws, "Rent Tracker");
+            XLSX.writeFile(wb, `Flat_Rent_Tracker_${new Date().toISOString().slice(0,10)}.xlsx`);
+        }
+
+        // --- Scroll helper ---
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const topbar = document.querySelector('.topbar');
+            const offset = (topbar ? topbar.offsetHeight : 0) + 14;
+            const top = el.getBoundingClientRect().top + window.pageYOffset - offset;
+            window.scrollTo({ top: top, behavior: 'smooth' });
+            el.style.transition = 'box-shadow 0.3s ease';
+            el.style.boxShadow = '0 0 0 3px var(--flat1-primary)';
+            setTimeout(() => { el.style.boxShadow = ''; }, 1200);
+        }
+
+        // --- Init ---
+        window.onload = function() {
+            // Apply theme
+            const preferred = getPreferredTheme();
+            applyTheme(preferred);
+
+            setupDefaults();
+            const t1 = document.getElementById('payments-flat1').getElementsByTagName('tbody')[0];
+            const t2 = document.getElementById('payments-flat2').getElementsByTagName('tbody')[0];
+            if (t1.rows.length === 0) seedPaymentsTable('flat1', flat1Seed);
+            if (t2.rows.length === 0) seedPaymentsTable('flat2', flat2Seed);
+            loadTrackerData();
+            syncPaymentPeriods('flat1');
+            syncPaymentPeriods('flat2');
+            sanitizeFuturePeriods('flat1');
+            sanitizeFuturePeriods('flat2');
+            calculateRentForm('flat1');
+            calculateRentForm('flat2');
+            updateKPIs();
+            initCloudSync();
+        };
+    </script>
+
+    <!-- QUICK JUMP FAB -->
+    <div class="quick-jump-fab" id="quickJumpFab">
+        <button class="fab-btn fab-flat1" onclick="scrollToSection('payment-form-flat1')" title="Jump to Flat 1 — Add Payment">🏢<span>1</span></button>
+        <button class="fab-btn fab-flat2" onclick="scrollToSection('payment-form-flat2')" title="Jump to Flat 2 — Add Payment">🏢<span>2</span></button>
+    </div>
+</body>
+</html>
